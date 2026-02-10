@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3: Polynomial Long Division</title>
+    
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        processEscapes: true
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --highlight: #f1c40f;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--primary); padding: 20px; max-width: 900px; margin: 0 auto; }
+        
+        h1, h2, h3 { text-align: center; color: var(--primary); }
+        .card { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        
+        button { 
+            padding: 10px 20px; font-size: 1rem; border: none; border-radius: 6px; cursor: pointer; 
+            background: var(--primary); color: white; transition: 0.2s; margin: 5px;
+        }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:disabled { background: #bdc3c7; cursor: not-allowed; }
+
+        /* Long Division Grid Layout */
+        .div-container {
+            display: grid;
+            grid-template-columns: 80px 15px repeat(4, 60px); 
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            gap: 5px;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        /* Number Analogy Grid */
+        .num-container {
+            display: grid;
+            grid-template-columns: 30px 10px 20px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            gap: 2px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .cell { padding: 5px; text-align: center; }
+        .border-bottom { border-bottom: 2px solid black; }
+        .border-right { border-right: 2px solid black; }
+        
+        .quotient-row { color: #e67e22; font-weight: bold; }
+        .subtraction-row { color: #c0392b; }
+        .result-row { color: var(--primary); font-weight: bold; border-top: 2px solid #ccc; }
+        
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        
+        .step-box {
+            background: #e8f6f3; border-left: 5px solid #1abc9c; padding: 15px; margin-top: 15px; font-style: italic; min-height: 60px;
+        }
+
+        .practice-container { margin-bottom: 30px; border-bottom: 1px dashed #ccc; padding-bottom: 20px; }
+        input[type="number"] { width: 50px; padding: 5px; text-align: center; font-size: 1rem; border: 2px solid #bdc3c7; border-radius: 4px; }
+        .correct { border-color: #27ae60; background: #d4edda; }
+        .wrong { border-color: #c0392b; background: #f8d7da; }
+        
+        /* Solution Box Style */
+        .solution-reveal {
+            display: none;
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<h1>Polynomial Long Division</h1>
+<p style="text-align:center;">Level 3 Calculus & Algebra Tool</p>
+
+<div class="card">
+    <h2>1. The Analogy: Dividing Numbers</h2>
+    <p>Algebraic division follows the exact same 4 steps as integer division: <strong>Divide, Multiply, Subtract, Bring Down</strong>.</p>
+    
+    <div style="display:flex; justify-content:space-around; align-items:flex-start; flex-wrap:wrap;">
+        
+        <div style="text-align:center;">
+            <h3>$75 \div 4$</h3>
+            <div class="num-container">
+                <div></div><div></div><div class="quotient-row">1</div><div class="quotient-row">8</div>
+                <div class="border-right">4</div><div>)</div><div class="border-bottom">7</div><div class="border-bottom">5</div>
+                <div></div><div></div><div class="subtraction-row">-4</div><div></div>
+                <div></div><div></div><div class="result-row">3</div><div>5</div>
+                <div></div><div></div><div class="subtraction-row">-3</div><div class="subtraction-row">2</div>
+                <div></div><div></div><div></div><div class="result-row">3</div>
+            </div>
+            <p><strong>Result:</strong> $18$ remainder $3$.</p>
+        </div>
+
+        <div style="max-width: 400px;">
+            <h3>The Process</h3>
+            <ol>
+                <li><strong>D</strong>ivide: How many 4s in 7? (1).</li>
+                <li><strong>M</strong>ultiply: $1 \times 4 = 4$.</li>
+                <li><strong>S</strong>ubtract: $7 - 4 = 3$.</li>
+                <li><strong>B</strong>ring Down: Bring down the 5 to make 35.</li>
+                <li><strong>Repeat:</strong> How many 4s in 35? (8)...</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>2. Visualiser: $(2x^3 - 3x^2 + 4x + 5) \div (x + 1)$</h2>
+    <div style="text-align:center; margin-bottom:10px;">
+        <button id="nextBtn" onclick="nextStep()">Show Next Step ▶</button>
+        <button onclick="resetDemo()" style="background:#7f8c8d;">Reset</button>
+    </div>
+
+    <div class="div-container" id="demoGrid">
+        <div class="cell"></div><div class="cell"></div>
+        <div class="cell quotient-row" id="q1"></div>
+        <div class="cell quotient-row" id="q2"></div>
+        <div class="cell quotient-row" id="q3"></div>
+        <div class="cell"></div>
+
+        <div class="cell border-right" style="text-align:right;">$x + 1$</div>
+        <div class="cell">)</div>
+        <div class="cell border-bottom">$2x^3$</div>
+        <div class="cell border-bottom">$-3x^2$</div>
+        <div class="cell border-bottom">$+4x$</div>
+        <div class="cell border-bottom">$+5$</div>
+    </div>
+
+    <div class="step-box" id="explainText">Click "Show Next Step" to start the algebra engine.</div>
+</div>
+
+<div class="card">
+    <h2>3. Your Turn</h2>
+    <p>Complete these 4 problems. You have <strong>3 attempts</strong> per question before the full solution is revealed.</p>
+
+    <div class="practice-container">
+        <h3>Q1: Cubic $\div$ Linear (with Remainder)</h3>
+        <p>Divide $P(x) = x^3 + 4x^2 - 3x - 5$ by $D(x) = x - 1$</p>
+        <div style="text-align:center; font-size:1.1rem;">
+            Quotient: 
+            <input type="number" id="q1_a" placeholder="a">$x^2$ + 
+            <input type="number" id="q1_b" placeholder="b">$x$ + 
+            <input type="number" id="q1_c" placeholder="c">
+            &nbsp;&nbsp;&nbsp; Remainder: <input type="number" id="q1_r" placeholder="R">
+        </div>
+        <div style="text-align:center; margin-top:10px;">
+            <button id="btn_q1" onclick="checkQ1()">Check Q1</button>
+            <span id="fb_q1" style="font-weight:bold; margin-left:10px;"></span>
+        </div>
+        <div id="sol_q1" class="solution-reveal">
+            <strong>Solution Steps:</strong><br>
+            1. $x^3 \div x = x^2$. Multiply: $x^2(x-1) = x^3 - x^2$.<br>
+            2. Subtract: $4x^2 - (-x^2) = 5x^2$. Bring down $-3x$.<br>
+            3. $5x^2 \div x = 5x$. Multiply: $5x(x-1) = 5x^2 - 5x$.<br>
+            4. Subtract: $-3x - (-5x) = 2x$. Bring down $-5$.<br>
+            5. $2x \div x = 2$. Multiply: $2(x-1) = 2x - 2$.<br>
+            6. Subtract: $-5 - (-2) = -3$.<br>
+            <strong>Answer: $x^2 + 5x + 2$, Remainder $-3$</strong>.
+        </div>
+    </div>
+
+    <div class="practice-container">
+        <h3>Q2: Quadratic $\div$ Linear (Factor)</h3>
+        <p>Divide $P(x) = x^2 + 7x + 12$ by $D(x) = x + 3$</p>
+        <p><em>(Hint: This divides perfectly, so Remainder should be 0)</em></p>
+        <div style="text-align:center; font-size:1.1rem;">
+            Quotient: 
+            <input type="number" id="q2_a" placeholder="a">$x$ + 
+            <input type="number" id="q2_b" placeholder="b">
+            &nbsp;&nbsp;&nbsp; Remainder: <input type="number" id="q2_r" placeholder="R">
+        </div>
+        <div style="text-align:center; margin-top:10px;">
+            <button id="btn_q2" onclick="checkQ2()">Check Q2</button>
+            <span id="fb_q2" style="font-weight:bold; margin-left:10px;"></span>
+        </div>
+        <div id="sol_q2" class="solution-reveal">
+            <strong>Solution Steps:</strong><br>
+            1. $x^2 \div x = x$. Multiply: $x(x+3) = x^2 + 3x$.<br>
+            2. Subtract: $7x - 3x = 4x$. Bring down $+12$.<br>
+            3. $4x \div x = 4$. Multiply: $4(x+3) = 4x + 12$.<br>
+            4. Subtract: $12 - 12 = 0$.<br>
+            <strong>Answer: $x + 4$, Remainder $0$</strong>.
+        </div>
+    </div>
+
+    <div class="practice-container">
+        <h3>Q3: Quadratic $\div$ Linear (with Remainder)</h3>
+        <p>Divide $P(x) = 2x^2 + 5x + 4$ by $D(x) = x + 1$</p>
+        <div style="text-align:center; font-size:1.1rem;">
+            Quotient: 
+            <input type="number" id="q3_a" placeholder="a">$x$ + 
+            <input type="number" id="q3_b" placeholder="b">
+            &nbsp;&nbsp;&nbsp; Remainder: <input type="number" id="q3_r" placeholder="R">
+        </div>
+        <div style="text-align:center; margin-top:10px;">
+            <button id="btn_q3" onclick="checkQ3()">Check Q3</button>
+            <span id="fb_q3" style="font-weight:bold; margin-left:10px;"></span>
+        </div>
+        <div id="sol_q3" class="solution-reveal">
+            <strong>Solution Steps:</strong><br>
+            1. $2x^2 \div x = 2x$. Multiply: $2x(x+1) = 2x^2 + 2x$.<br>
+            2. Subtract: $5x - 2x = 3x$. Bring down $+4$.<br>
+            3. $3x \div x = 3$. Multiply: $3(x+1) = 3x + 3$.<br>
+            4. Subtract: $4 - 3 = 1$.<br>
+            <strong>Answer: $2x + 3$, Remainder $1$</strong>.
+        </div>
+    </div>
+
+    <div class="practice-container" style="border-bottom:none;">
+        <h3>Q4: Cubic $\div$ Quadratic</h3>
+        <p>Divide $P(x) = x^3 + x^2 + x + 2$ by $D(x) = x^2 + 1$</p>
+        <p><em>(Careful: The divisor is quadratic, so the quotient is linear)</em></p>
+        <div style="text-align:center; font-size:1.1rem;">
+            Quotient: 
+            <input type="number" id="q4_a" placeholder="a">$x$ + 
+            <input type="number" id="q4_b" placeholder="b">
+            &nbsp;&nbsp;&nbsp; Remainder: <input type="number" id="q4_r" placeholder="R">
+        </div>
+        <div style="text-align:center; margin-top:10px;">
+            <button id="btn_q4" onclick="checkQ4()">Check Q4</button>
+            <span id="fb_q4" style="font-weight:bold; margin-left:10px;"></span>
+        </div>
+        <div id="sol_q4" class="solution-reveal">
+            <strong>Solution Steps:</strong><br>
+            1. $x^3 \div x^2 = x$. Multiply: $x(x^2+1) = x^3 + x$.<br>
+            2. Subtract: $(x^3 + x^2 + x) - (x^3 + x) = x^2$. Bring down $+2$.<br>
+            3. $x^2 \div x^2 = 1$. Multiply: $1(x^2+1) = x^2 + 1$.<br>
+            4. Subtract: $(x^2 + 2) - (x^2 + 1) = 1$.<br>
+            <strong>Answer: $x + 1$, Remainder $1$</strong>.
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- DEMO LOGIC ---
+    let step = 0;
+    const grid = document.getElementById('demoGrid');
+    const text = document.getElementById('explainText');
+    const btn = document.getElementById('nextBtn');
+
+    function addRow(contentArray, className) {
+        let div = document.createElement('div'); div.className = 'cell'; grid.appendChild(div);
+        let div2 = document.createElement('div'); div2.className = 'cell'; grid.appendChild(div2);
+        
+        contentArray.forEach(txt => {
+            let el = document.createElement('div');
+            el.className = `cell ${className} fade-in`;
+            el.innerHTML = txt;
+            grid.appendChild(el);
+        });
+        MathJax.typesetPromise();
+    }
+
+    function nextStep() {
+        step++;
+        if(step === 1) {
+            document.getElementById('q1').innerHTML = "$2x^2$";
+            text.innerHTML = "<strong>1. Divide:</strong> $2x^3 \\div x = 2x^2$. Write it on top.";
+        }
+        else if(step === 2) {
+            addRow(["$-(2x^3$", "$+2x^2)$", "", ""], "subtraction-row");
+            text.innerHTML = "<strong>2. Multiply:</strong> $2x^2(x + 1) = 2x^3 + 2x^2$.<br><strong>3. Subtract:</strong> Flip signs and add.";
+        }
+        else if(step === 3) {
+            addRow(["$0$", "$-5x^2$", "$+4x$", ""], "result-row");
+            text.innerHTML = "<strong>4. Bring Down:</strong> Result is $-5x^2$. Bring down $+4x$.";
+        }
+        else if(step === 4) {
+            document.getElementById('q2').innerHTML = "$-5x$";
+            text.innerHTML = "<strong>Repeat Divide:</strong> $-5x^2 \\div x = -5x$.";
+        }
+        else if(step === 5) {
+            addRow(["", "$-(-5x^2$", "$-5x)$", ""], "subtraction-row");
+            text.innerHTML = "<strong>Multiply & Subtract:</strong> $-5x(x + 1) = -5x^2 - 5x$.";
+        }
+        else if(step === 6) {
+            addRow(["", "$0$", "$9x$", "$+5$"], "result-row");
+            text.innerHTML = "<strong>Bring Down:</strong> $4x - (-5x) = 9x$. Bring down $+5$.";
+        }
+        else if(step === 7) {
+            document.getElementById('q3').innerHTML = "$+9$";
+            text.innerHTML = "<strong>Repeat Divide:</strong> $9x \\div x = 9$.";
+        }
+        else if(step === 8) {
+            addRow(["", "", "$-(9x$", "$+9)$"], "subtraction-row");
+            text.innerHTML = "<strong>Multiply & Subtract:</strong> $9(x+1) = 9x + 9$.";
+        }
+        else if(step === 9) {
+            addRow(["", "", "$0$", "$-4$"], "result-row");
+            text.innerHTML = "<strong>Finished!</strong> Remainder is $-4$.<br>Answer: $2x^2 - 5x + 9$ (rem $-4$).";
+            btn.disabled = true;
+            btn.innerText = "Done";
+        }
+        MathJax.typesetPromise();
+    }
+
+    function resetDemo() {
+        location.reload(); 
+    }
+
+    // --- PRACTICE LOGIC ---
+    let attempts = { q1: 0, q2: 0, q3: 0, q4: 0 };
+
+    function validate(inputs, answers, feedbackId, qKey) {
+        attempts[qKey]++;
+        let correct = true;
+        
+        for(let i=0; i<inputs.length; i++) {
+            let el = document.getElementById(inputs[i]);
+            if(parseFloat(el.value) === answers[i]) {
+                el.className = "correct";
+            } else {
+                el.className = "wrong";
+                correct = false;
+            }
+        }
+        
+        let fb = document.getElementById(feedbackId);
+        
+        if(correct) {
+            fb.innerHTML = "✅ Correct!";
+            fb.style.color = "#27ae60";
+            document.getElementById('sol_' + qKey).style.display = "block"; // Show steps anyway on success
+            document.getElementById('btn_' + qKey).disabled = true; // Lock button
+        } else {
+            if(attempts[qKey] < 3) {
+                fb.innerHTML = `❌ Try again. (${attempts[qKey]}/3 attempts)`;
+                fb.style.color = "#c0392b";
+            } else {
+                fb.innerHTML = "❌ 3 Attempts used. Solution revealed below.";
+                fb.style.color = "#e74c3c";
+                document.getElementById('sol_' + qKey).style.display = "block";
+                document.getElementById('btn_' + qKey).disabled = true; // Lock button
+            }
+        }
+        // Re-render mathjax in the revealed solution box
+        if(document.getElementById('sol_' + qKey).style.display === "block") {
+            MathJax.typesetPromise();
+        }
+    }
+
+    function checkQ1() {
+        // (x^3 + 4x^2 - 3x - 5) / (x - 1)
+        // Ans: x^2 + 5x + 2, Rem: -3
+        validate(['q1_a', 'q1_b', 'q1_c', 'q1_r'], [1, 5, 2, -3], 'fb_q1', 'q1');
+    }
+
+    function checkQ2() {
+        // (x^2 + 7x + 12) / (x + 3) = x + 4, R 0
+        validate(['q2_a', 'q2_b', 'q2_r'], [1, 4, 0], 'fb_q2', 'q2');
+    }
+
+    function checkQ3() {
+        // (2x^2 + 5x + 4) / (x + 1)
+        // Quot: 2x + 3, Rem: 1
+        validate(['q3_a', 'q3_b', 'q3_r'], [2, 3, 1], 'fb_q3', 'q3');
+    }
+
+    function checkQ4() {
+        // (x^3 + x^2 + x + 2) / (x^2 + 1)
+        // Quot: x + 1, Rem: 1
+        validate(['q4_a', 'q4_b', 'q4_r'], [1, 1, 1], 'fb_q4', 'q4');
+    }
+</script>
+
+</body>
+</html>
