@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr. Shen's Level 3 Calculus Tools</title>
+    <style>
+        :root {
+            --primary: #2c3e50; /* Dark Blue */
+            --accent: #3498db;  /* Bright Blue */
+            --bg: #f4f6f7;
+            --card-bg: #ffffff;
+            --text-color: #34495e;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        header {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        header h1 { margin: 0; font-size: 2.5rem; }
+        header p { margin-top: 10px; font-size: 1.2rem; opacity: 0.9; }
+
+        /* Main Grid */
+        main {
+            flex: 1;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* Tool Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none; /* Remove underline from links */
+            color: inherit;
+            border-left: 5px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Color Coding for Topics */
+        .card.algebra { border-left-color: #e67e22; } /* Orange */
+        .card.complex { border-left-color: #8e44ad; } /* Purple */
+        .card.calculus { border-left-color: #27ae60; } /* Green (Future) */
+
+        .card h2 { margin-top: 0; font-size: 1.4rem; color: var(--primary); }
+        .card p { color: #7f8c8d; line-height: 1.5; }
+        
+        .tag {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .tag.alg { background: #fce4d6; color: #d35400; }
+        .tag.comp { background: #f5eef8; color: #8e44ad; }
+
+        .btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: var(--accent);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .card:hover .btn { background: #2980b9; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Level 3 Calculus Tools</h1>
+    <p>Interactive Visualisers & Practice Modules</p>
+</header>
+
+<main>
+
+    <a href="Level3_PolyDiv_Final.html" class="card algebra">
+        <div>
+            <span class="tag alg">Algebra</span>
+            <h2>Polynomial Long Division</h2>
+            <p>Master the algorithm for dividing polynomials. Includes a step-by-step visualizer and guided practice for finding quotients and remainders.</p>
+        </div>
+        <div class="btn">Open Tool ➔</div>
+    </a>
+
+    <a href="Level3_ComplexNumbers_Diamond.html" class="card complex">
+        <div>
+            <span class="tag comp">Complex Numbers</span>
+            <h2>Argand Diagram & Arithmetic</h2>
+            <p>Visualise vectors on the complex plane. Practice addition, subtraction, multiplication, and division (rationalization).</p>
+        </div>
+        <div class="btn">Open Tool ➔</div>
+    </a>
+
+    <a href="Level3_Complex_ModArg.html" class="card complex">
+        <div>
+            <span class="tag comp">Complex Numbers</span>
+            <h2>Modulus, Argument & Locus</h2>
+            <p>Understand polar forms and solve exam-style problems involving unknown constants ($k$) and argument logic.</p>
+        </div>
+        <div class="btn">Open Tool ➔</div>
+    </a>
+
+    </main>
+
+<footer>
+    <p>Designed by Mr. Shen for Level 3 Calculus Students.</p>
+</footer>
+
+</body>
+</html>
