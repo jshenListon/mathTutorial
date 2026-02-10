@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3: Complex Numbers & Argand Diagrams</title>
+    
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        processEscapes: true
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2980b9; /* Blue */
+            --secondary: #8e44ad; /* Purple */
+            --result: #e67e22; /* Orange for answers */
+            --bg: #f4f6f7;
+            --card: #ffffff;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #2c3e50; padding: 20px; max-width: 950px; margin: 0 auto; }
+        
+        h1, h2 { text-align: center; color: var(--primary); }
+        .card { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        
+        /* Flex containers for Side-by-Side */
+        .flex-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .flex-item { flex: 1; min-width: 300px; }
+
+        /* Graph Styles */
+        .graph-box { text-align: center; border: 1px solid #bdc3c7; background: white; border-radius: 8px; position: relative; }
+        svg { background-color: #fff; cursor: crosshair; }
+        .axis { stroke: #333; stroke-width: 1.5; }
+        .grid-line { stroke: #eee; stroke-width: 1; }
+        text { font-family: sans-serif; font-size: 10px; fill: #666; }
+        
+        /* Interactive Inputs */
+        .input-group { 
+            background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 10px; text-align: center;
+        }
+        input[type="number"] { width: 60px; padding: 5px; text-align: center; border: 2px solid #bdc3c7; border-radius: 4px; font-weight: bold; }
+        
+        /* Operation Buttons */
+        .op-btn {
+            padding: 8px 15px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; transition: 0.2s;
+        }
+        .btn-add { background: #27ae60; }
+        .btn-sub { background: #c0392b; }
+        .btn-mul { background: #2980b9; }
+        .btn-div { background: #8e44ad; }
+        .op-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .op-btn:disabled { background: #95a5a6; cursor: not-allowed; opacity: 0.6; }
+
+        /* Step-by-Step Display */
+        .math-steps {
+            background: #fff; border-left: 4px solid var(--primary); padding: 15px; margin-top: 15px; min-height: 100px;
+        }
+        
+        /* Feedback */
+        .feedback { margin-top: 10px; font-weight: bold; min-height: 20px; }
+        .correct { color: #27ae60; }
+        .wrong { color: #c0392b; }
+        
+        .solution-reveal { display: none; background: #fff8e1; border: 1px solid #ffe082; padding: 10px; margin-top: 10px; border-radius: 5px; }
+
+        /* Tabs for Practice */
+        .tab-container { margin-top: 15px; }
+        .tab-btn { background: #eee; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px 5px 0 0; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-content { display: none; border: 1px solid #ccc; padding: 15px; border-radius: 0 5px 5px 5px; background: #fff; }
+        .tab-content.active { display: block; }
+
+    </style>
+</head>
+<body>
+
+<h1>Complex Numbers: Argand & Arithmetic</h1>
+<p style="text-align:center;">Level 3 Calculus Tool</p>
+
+<div class="card">
+    <h2>1. Visualiser & Calculator</h2>
+    <div class="flex-container">
+        
+        <div class="flex-item">
+            <div class="input-group">
+                <h3>Input Complex Numbers</h3>
+                <p><strong>$u =$</strong> <input type="number" id="u_r" value="3"> + <input type="number" id="u_i" value="2">$i$</p>
+                <p><strong>$v =$</strong> <input type="number" id="v_r" value="1"> + <input type="number" id="v_i" value="-2">$i$</p>
+                <button onclick="updateExplorer()" style="background:#34495e; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer;">Update Graph</button>
+            </div>
+
+            <div class="input-group">
+                <h3>Operations</h3>
+                <button class="op-btn btn-add" onclick="calc('add')">$u + v$</button>
+                <button class="op-btn btn-sub" onclick="calc('sub')">$u - v$</button>
+                <button class="op-btn btn-mul" onclick="calc('mul')">$u \times v$</button>
+                <button class="op-btn btn-div" onclick="calc('div')">$u \div v$</button>
+            </div>
+
+            <div class="math-steps" id="calcOutput">
+                Select an operation to see the step-by-step algebra.
+            </div>
+        </div>
+
+        <div class="flex-item">
+            <div class="graph-box">
+                <svg id="mainGraph" width="400" height="400" viewBox="0 0 400 400">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                        </marker>
+                    </defs>
+                    </svg>
+                <div style="position:absolute; top:10px; right:10px; background:rgba(255,255,255,0.8); padding:5px; border:1px solid #ccc; font-size:0.8rem;">
+                    <span style="color:#2980b9">● u (Blue)</span><br>
+                    <span style="color:#8e44ad">● v (Purple)</span><br>
+                    <span style="color:#e67e22">● Result (Orange)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>2. Try Yourself: Identify & Calculate</h2>
+    <p>Look at the graph below. I have plotted two random numbers, <strong>$u$</strong> and <strong>$v$</strong>.</p>
+    
+    <div class="flex-container">
+        <div class="flex-item" style="max-width:350px;">
+            <div class="graph-box">
+                <svg id="practiceGraph" width="320" height="320" viewBox="0 0 320 320">
+                    </svg>
+            </div>
+            <div style="text-align:center; margin-top:10px;">
+                <button onclick="newPracticeProblem()" style="background:#7f8c8d; color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;">🔄 New Problem</button>
+            </div>
+        </div>
+
+        <div class="flex-item">
+            
+            <div class="input-group" id="phase1">
+                <h3>Step 1: Identify Coordinates</h3>
+                <p>What is $u$? <input type="number" id="p_ur" placeholder="Re"> + <input type="number" id="p_ui" placeholder="Im">$i$</p>
+                <p>What is $v$? <input type="number" id="p_vr" placeholder="Re"> + <input type="number" id="p_vi" placeholder="Im">$i$</p>
+                <button class="op-btn btn-add" onclick="checkCoordinates()">Check Coordinates</button>
+                <div id="fb_phase1" class="feedback"></div>
+            </div>
+
+            <div id="phase2" style="display:none; margin-top:20px;">
+                <h3>Step 2: Calculate & Visualize</h3>
+                <div class="tab-container">
+                    <button class="tab-btn active" onclick="openTab('tab-add')">$+$</button>
+                    <button class="tab-btn" onclick="openTab('tab-sub')">$-$</button>
+                    <button class="tab-btn" onclick="openTab('tab-mul')">$\times$</button>
+                    <button class="tab-btn" onclick="openTab('tab-div')">$\div$</button>
+                </div>
+
+                <div id="tab-add" class="tab-content active">
+                    <p>Calculate $u + v$:</p>
+                    <input type="number" id="ans_add_r"> + <input type="number" id="ans_add_i">$i$
+                    <br><button class="op-btn btn-add" onclick="checkOp('add')">Check & Plot</button>
+                    <div id="fb_add" class="feedback"></div>
+                    <div id="sol_add" class="solution-reveal"></div>
+                </div>
+
+                <div id="tab-sub" class="tab-content">
+                    <p>Calculate $u - v$:</p>
+                    <input type="number" id="ans_sub_r"> + <input type="number" id="ans_sub_i">$i$
+                    <br><button class="op-btn btn-sub" onclick="checkOp('sub')">Check & Plot</button>
+                    <div id="fb_sub" class="feedback"></div>
+                    <div id="sol_sub" class="solution-reveal"></div>
+                </div>
+
+                <div id="tab-mul" class="tab-content">
+                    <p>Calculate $u \times v$:</p>
+                    <input type="number" id="ans_mul_r"> + <input type="number" id="ans_mul_i">$i$
+                    <br><button class="op-btn btn-mul" onclick="checkOp('mul')">Check & Plot</button>
+                    <div id="fb_mul" class="feedback"></div>
+                    <div id="sol_mul" class="solution-reveal"></div>
+                </div>
+
+                <div id="tab-div" class="tab-content">
+                    <p>Calculate $\frac{u}{v}$ (Round to 2 d.p.):</p>
+                    <p style="font-size:0.9rem; color:#666;">Remember to rationalize the denominator!</p>
+                    <input type="number" id="ans_div_r" step="0.01"> + <input type="number" id="ans_div_i" step="0.01">$i$
+                    <br><button class="op-btn btn-div" onclick="checkOp('div')">Check & Plot</button>
+                    <div id="fb_div" class="feedback"></div>
+                    <div id="sol_div" class="solution-reveal"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- GRAPHING ENGINE ---
+    const SCALE = 20; // Pixels per unit
+    // Center is now calculated dynamically in drawGrid based on SVG size
+
+    function drawGrid(svgId, size) {
+        const svg = document.getElementById(svgId);
+        svg.innerHTML = `
+            <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                </marker>
+            </defs>
+        `; // Reset
+        const center = size / 2;
+        
+        // Grid Lines
+        for(let i=0; i<=size; i+=SCALE) {
+            let opacity = (i === center) ? 1 : 0.3;
+            let stroke = (i === center) ? "#000" : "#ddd";
+            let width = (i === center) ? 2 : 1;
+            
+            // Vertical
+            svg.innerHTML += `<line x1="${i}" y1="0" x2="${i}" y2="${size}" stroke="${stroke}" stroke-width="${width}" />`;
+            // Horizontal
+            svg.innerHTML += `<line x1="0" y1="${i}" x2="${size}" y2="${i}" stroke="${stroke}" stroke-width="${width}" />`;
+        }
+
+        // Labels
+        for(let i=-8; i<=8; i+=2) {
+            if(i===0) continue;
+            let pos = center + (i * SCALE);
+            // Only draw if within bounds
+            if(pos >= 10 && pos <= size - 10) {
+                // X axis labels
+                svg.innerHTML += `<text x="${pos}" y="${center+15}" text-anchor="middle">${i}</text>`; 
+                // Y axis labels
+                svg.innerHTML += `<text x="${center+8}" y="${pos}" dominant-baseline="middle" text-anchor="start">${-i}</text>`; 
+            }
+        }
+        // Axis Names
+        svg.innerHTML += `<text x="${size-25}" y="${center-8}" font-weight="bold">Re</text>`;
+        svg.innerHTML += `<text x="${center+8}" y="15" font-weight="bold">Im</text>`;
+    }
+
+    function plotVector(svgId, r, i, color, label, size, isDashed=false) {
+        const svg = document.getElementById(svgId);
+        const center = size / 2;
+        const x = center + (r * SCALE);
+        const y = center - (i * SCALE); // Invert Y for SVG
+        
+        let dash = isDashed ? 'stroke-dasharray="4"' : '';
+        
+        // Line
+        svg.innerHTML += `<line x1="${center}" y1="${center}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="2" marker-end="url(#arrow)" ${dash} />`;
+        
+        // Dot
+        svg.innerHTML += `<circle cx="${x}" cy="${y}" r="3" fill="${color}" />`;
+        
+        // Label
+        svg.innerHTML += `<text x="${x+5}" y="${y-5}" fill="${color}" font-weight="bold" font-size="12">${label}</text>`;
+    }
+
+    // --- LOGIC ---
+    
+    // Part 1: Explorer
+    function updateExplorer() {
+        drawGrid('mainGraph', 400);
+        let ur = parseFloat(document.getElementById('u_r').value) || 0;
+        let ui = parseFloat(document.getElementById('u_i').value) || 0;
+        let vr = parseFloat(document.getElementById('v_r').value) || 0;
+        let vi = parseFloat(document.getElementById('v_i').value) || 0;
+        
+        plotVector('mainGraph', ur, ui, '#2980b9', 'u', 400);
+        plotVector('mainGraph', vr, vi, '#8e44ad', 'v', 400);
+    }
+
+    function calc(op) {
+        updateExplorer(); // Redraw base grid and u,v
+        
+        let ur = parseFloat(document.getElementById('u_r').value);
+        let ui = parseFloat(document.getElementById('u_i').value);
+        let vr = parseFloat(document.getElementById('v_r').value);
+        let vi = parseFloat(document.getElementById('v_i').value);
+        let steps = "";
+        let resR, resI;
+
+        if (op === 'add') {
+            resR = ur + vr;
+            resI = ui + vi;
+            steps = `$$(${ur} + ${ui}i) + (${vr} + ${vi}i)$$
+                     $$= (${ur} + ${vr}) + (${ui} + ${vi})i$$
+                     $$= ${resR} + ${resI}i$$`;
+        } 
+        else if (op === 'sub') {
+            resR = ur - vr;
+            resI = ui - vi;
+            steps = `$$(${ur} + ${ui}i) - (${vr} + ${vi}i)$$
+                     $$= (${ur} - ${vr}) + (${ui} - ${vi})i$$
+                     $$= ${resR} + ${resI}i$$`;
+        }
+        else if (op === 'mul') {
+            resR = (ur * vr) - (ui * vi);
+            resI = (ur * vi) + (ui * vr);
+            steps = `$$(${ur} + ${ui}i)(${vr} + ${vi}i)$$
+                     $$= ${ur}(${vr}) + ${ur}(${vi}i) + ${ui}i(${vr}) + ${ui}i(${vi}i)$$
+                     $$= ${ur*vr} + ${ur*vi}i + ${ui*vr}i + ${ui*vi}i^2$$
+                     $$(i^2 = -1) \\rightarrow ${ur*vr} + (${ur*vi} + ${ui*vr})i - ${ui*vi}$$
+                     $$= ${resR} + ${resI}i$$`;
+        }
+        else if (op === 'div') {
+            let denom = (vr*vr) + (vi*vi);
+            let numR = (ur * vr) + (ui * vi);
+            let numI = (ui * vr) - (ur * vi);
+            resR = numR / denom;
+            resI = numI / denom;
+            
+            // Format for display (2dp)
+            let dR = Math.round(resR * 100) / 100;
+            let dI = Math.round(resI * 100) / 100;
+
+            steps = `<strong>Rationalization:</strong> Multiply top and bottom by conjugate $\\bar{v} = ${vr} ${vi < 0 ? '+' : '-'} ${Math.abs(vi)}i$.<br>
+                     $$ \\frac{${ur} + ${ui}i}{${vr} + ${vi}i} \\times \\frac{${vr} - ${vi}i}{${vr} - ${vi}i} $$
+                     $$ = \\frac{(${ur})(${vr}) + (${ur})(${-vi}i) + (${ui}i)(${vr}) + (${ui}i)(${-vi}i)}{${vr}^2 + ${vi}^2} $$
+                     $$ = \\frac{${ur*vr} + (${ur * -vi + ui * vr})i + ${ui * -vi}(-1)}{${vr*vr + vi*vi}} $$
+                     $$ = \\frac{${numR} + ${numI}i}{${denom}} = ${dR} + ${dI}i $$`;
+        }
+
+        document.getElementById('calcOutput').innerHTML = steps;
+        MathJax.typesetPromise();
+        
+        // Plot Result
+        plotVector('mainGraph', resR, resI, '#e67e22', 'Ans', 400);
+    }
+
+    // --- PRACTICE LOGIC ---
+    let p_u = {r:0, i:0};
+    let p_v = {r:0, i:0};
+    let attempts = { add:0, sub:0, mul:0, div:0 };
+
+    function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) ) + min;
+    }
+
+    function newPracticeProblem() {
+        // Generate small integers for u and v to keep graphs reasonable
+        p_u = {r: randInt(1, 4), i: randInt(1, 4)}; 
+        // Ensure v is not 0 for division
+        p_v = {r: randInt(-3, 3), i: randInt(-3, -1)}; 
+        
+        // Reset Interface - USING 320 SIZE HERE
+        drawGrid('practiceGraph', 320);
+        plotVector('practiceGraph', p_u.r, p_u.i, '#2980b9', 'u', 320);
+        plotVector('practiceGraph', p_v.r, p_v.i, '#8e44ad', 'v', 320);
+        
+        document.getElementById('phase1').style.display = 'block';
+        document.getElementById('phase2').style.display = 'none';
+        document.getElementById('fb_phase1').innerHTML = "";
+        
+        // Clear Inputs
+        ['p_ur','p_ui','p_vr','p_vi'].forEach(id => document.getElementById(id).value = '');
+        
+        // Reset Attempts
+        attempts = { add:0, sub:0, mul:0, div:0 };
+        ['add','sub','mul','div'].forEach(op => {
+            document.getElementById(`sol_${op}`).style.display = 'none';
+            document.getElementById(`fb_${op}`).innerHTML = '';
+            document.getElementById(`ans_${op}_r`).value = '';
+            document.getElementById(`ans_${op}_i`).value = '';
+        });
+    }
+
+    function checkCoordinates() {
+        let ur = parseFloat(document.getElementById('p_ur').value);
+        let ui = parseFloat(document.getElementById('p_ui').value);
+        let vr = parseFloat(document.getElementById('p_vr').value);
+        let vi = parseFloat(document.getElementById('p_vi').value);
+
+        if(ur === p_u.r && ui === p_u.i && vr === p_v.r && vi === p_v.i) {
+            document.getElementById('fb_phase1').innerHTML = "✅ Correct! Now calculate the operations below.";
+            document.getElementById('fb_phase1').className = "feedback correct";
+            document.getElementById('phase2').style.display = 'block';
+        } else {
+            document.getElementById('fb_phase1').innerHTML = "❌ Check the graph again. Be careful with signs.";
+            document.getElementById('fb_phase1').className = "feedback wrong";
+        }
+    }
+
+    function openTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function checkOp(op) {
+        let userR = parseFloat(document.getElementById(`ans_${op}_r`).value);
+        let userI = parseFloat(document.getElementById(`ans_${op}_i`).value);
+        let realR, realI, solutionTex;
+        
+        // Calculate Real Answer
+        if(op === 'add') { 
+            realR = p_u.r + p_v.r; realI = p_u.i + p_v.i; 
+            solutionTex = `$$u+v = (${p_u.r}+${p_v.r}) + (${p_u.i}+${p_v.i})i = ${realR} + ${realI}i$$`;
+        }
+        if(op === 'sub') { 
+            realR = p_u.r - p_v.r; realI = p_u.i - p_v.i; 
+            solutionTex = `$$u-v = (${p_u.r}-(${p_v.r})) + (${p_u.i}-(${p_v.i}))i = ${realR} + ${realI}i$$`;
+        }
+        if(op === 'mul') { 
+            realR = (p_u.r * p_v.r) - (p_u.i * p_v.i); 
+            realI = (p_u.r * p_v.i) + (p_u.i * p_v.r); 
+            solutionTex = `$$u \\times v = ${realR} + ${realI}i$$`;
+        }
+        if(op === 'div') { 
+            let denom = p_v.r**2 + p_v.i**2;
+            realR = ((p_u.r * p_v.r) + (p_u.i * p_v.i)) / denom;
+            realI = ((p_u.i * p_v.r) - (p_u.r * p_v.i)) / denom;
+            solutionTex = `$$Rationalize: \\times \\frac{${p_v.r} ${p_v.i < 0 ? '+' : '-'} ${Math.abs(p_v.i)}i}{...}$$ $$Result = ${realR.toFixed(2)} + ${realI.toFixed(2)}i$$`;
+        }
+
+        attempts[op]++;
+        let fb = document.getElementById(`fb_${op}`);
+        let sol = document.getElementById(`sol_${op}`);
+        
+        // Check with tolerance
+        if(Math.abs(userR - realR) < 0.1 && Math.abs(userI - realI) < 0.1) {
+            fb.innerHTML = "✅ Correct! Added to graph.";
+            fb.className = "feedback correct";
+            // PLOT ON 320 size
+            plotVector('practiceGraph', realR, realI, '#e67e22', 'Ans', 320, true);
+            sol.style.display = 'none';
+        } else {
+            if(attempts[op] < 3) {
+                fb.innerHTML = `❌ Try again (${attempts[op]}/3)`;
+                fb.className = "feedback wrong";
+            } else {
+                fb.innerHTML = "❌ 3 attempts used. Solution shown.";
+                fb.className = "feedback wrong";
+                sol.innerHTML = solutionTex;
+                sol.style.display = 'block';
+                MathJax.typesetPromise();
+                // PLOT ON 320 size
+                plotVector('practiceGraph', realR, realI, '#e67e22', 'Ans', 320, true);
+            }
+        }
+    }
+
+    // Initialize
+    drawGrid('mainGraph', 400);
+    updateExplorer();
+    newPracticeProblem();
+
+</script>
+
+</body>
+</html>
