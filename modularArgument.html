@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3: Modulus, Argument & Conjugate</title>
+    
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        processEscapes: true
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #16a085; /* Teal for Mod/Arg */
+            --highlight: #e74c3c;
+            --bg: #f4f6f7;
+            --card: #ffffff;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--primary); padding: 20px; max-width: 950px; margin: 0 auto; }
+        
+        h1, h2 { text-align: center; color: var(--primary); }
+        .card { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        
+        .flex-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .flex-item { flex: 1; min-width: 320px; }
+
+        /* Graph Box */
+        .graph-box { text-align: center; border: 1px solid #bdc3c7; background: white; border-radius: 8px; position: relative; }
+        svg { background-color: #fff; cursor: crosshair; }
+        text { font-family: sans-serif; font-size: 10px; fill: #666; }
+
+        /* Inputs */
+        .input-group { background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        input[type="number"] { width: 70px; padding: 5px; text-align: center; border: 2px solid #bdc3c7; border-radius: 4px; font-weight: bold; }
+        
+        button { padding: 8px 15px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; background: var(--primary); }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:disabled { background: #95a5a6; cursor: not-allowed; opacity: 0.7; }
+
+        .info-box { background: #fff; padding: 10px; border-left: 4px solid var(--accent); margin-top: 10px; font-size: 0.9rem; }
+        .formula { font-family: 'Courier New', monospace; background: #eee; padding: 2px 5px; border-radius: 3px; }
+
+        .feedback { margin-top: 10px; font-weight: bold; min-height: 20px; }
+        .correct { color: #27ae60; }
+        .wrong { color: #c0392b; }
+        .solution-reveal { display: none; background: #fff8e1; border: 1px solid #ffe082; padding: 15px; margin-top: 10px; border-radius: 5px; text-align: left; }
+
+        /* Tabs */
+        .tab-btn { background: #bdc3c7; margin-right: 5px; }
+        .tab-btn.active { background: var(--accent); }
+        .tab-content { display: none; padding: 15px; border: 1px solid #ddd; background: #fff; border-radius: 0 5px 5px 5px; }
+        .tab-content.active { display: block; }
+
+    </style>
+</head>
+<body>
+
+<h1>Modulus, Argument & Conjugate</h1>
+<p style="text-align:center;">Level 3 Complex Numbers Tool</p>
+
+<div class="card">
+    <h2>1. The Visualiser</h2>
+    <div class="flex-container">
+        <div class="flex-item">
+            <div class="input-group">
+                <h3>Input $z = x + iy$</h3>
+                <p>
+                    $z =$ <input type="number" id="z_r" value="3"> + <input type="number" id="z_i" value="4">$i$
+                    <button onclick="updateVisuals()">Plot</button>
+                </p>
+                <div class="info-box">
+                    <p><strong>Modulus $|z|$:</strong> Length from origin ($r$). <br><span class="formula">$\sqrt{x^2 + y^2}$</span></p>
+                    <p><strong>Argument $\arg(z)$:</strong> Angle from Real axis ($\theta$). <br><span class="formula">$\tan^{-1}(y/x)$</span></p>
+                    <p><strong>Conjugate $\bar{z}$:</strong> Reflection over Real axis. <br><span class="formula">$x - iy$</span></p>
+                </div>
+                <div id="calc_display" style="margin-top:15px; font-weight:bold; color:var(--primary);"></div>
+            </div>
+        </div>
+
+        <div class="flex-item">
+            <div class="graph-box">
+                <svg id="vizGraph" width="320" height="320" viewBox="0 0 320 320">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#333" /></marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>2. Try Yourself</h2>
+    
+    <div class="flex-container">
+        <div class="flex-item" style="max-width:350px;">
+            <div class="graph-box">
+                <svg id="practiceGraph" width="320" height="320" viewBox="0 0 320 320"></svg>
+            </div>
+            <div style="text-align:center; margin-top:10px;">
+                <button onclick="newProblem()" style="background:#7f8c8d;">🔄 New $z$</button>
+            </div>
+        </div>
+
+        <div class="flex-item">
+            
+            <div class="input-group" id="phase1">
+                <h3>Step 1: Identify $z$</h3>
+                <p>Look at the graph. What is $z$?</p>
+                <input type="number" id="p_r" placeholder="Re"> + <input type="number" id="p_i" placeholder="Im">$i$
+                <button onclick="checkPhase1()">Check</button>
+                <div id="fb_p1" class="feedback"></div>
+            </div>
+
+            <div id="phase2" style="display:none;">
+                <h3>Step 2: Calculate Properties</h3>
+                <p><strong>A. Modulus $|z|$:</strong> (2 d.p.) <input type="number" id="ans_mod"></p>
+                <p><strong>B. Argument $\arg(z)$:</strong> (Radians, 2 d.p.) <input type="number" id="ans_arg"></p>
+                <p><strong>C. Conjugate $\bar{z}$:</strong> <input type="number" id="ans_conj_r"> + <input type="number" id="ans_conj_i">$i$</p>
+                <button onclick="checkPhase2()">Check Properties</button>
+                <div id="fb_p2" class="feedback"></div>
+                <div id="sol_p2" class="solution-reveal"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>3. Exam Style: Unknowns ($k$)</h2>
+    <p>These questions often appear in NCEA Level 3 exams. Solving for unknown constants using Modulus and Argument rules.</p>
+    
+    <div>
+        <button class="tab-btn active" onclick="openTab('q_arg')">Q1: Argument</button>
+        <button class="tab-btn" onclick="openTab('q_mod')">Q2: Modulus</button>
+    </div>
+
+    <div id="q_arg" class="tab-content active">
+        <h3>Question 1: Argument Logic (Based on 2013/2022 Exam)</h3>
+        <p>Let $u = 6 + ki$ and $v = 4 + ki$, where $k$ is a positive real constant.</p>
+        <p>If $\arg(u \times v) = \frac{\pi}{4}$, find the value of $k$.</p>
+        
+        <p><em>Hint: If $\arg(z) = \frac{\pi}{4}$, then $\tan(\frac{\pi}{4}) = 1$, so Real part = Imaginary part.</em></p>
+        
+        <p>$k =$ <input type="number" id="ans_k1"></p>
+        <button id="btn_k1" onclick="checkK1()">Check</button>
+        <div id="fb_k1" class="feedback"></div>
+        <div id="sol_k1" class="solution-reveal">
+            <strong>Solution:</strong><br>
+            1. Multiply $uv = (6+ki)(4+ki) = 24 + 6ki + 4ki + k^2i^2$.<br>
+            2. Simplify ($i^2 = -1$): $uv = (24 - k^2) + (10k)i$.<br>
+            3. Since $\arg(uv) = \pi/4$, $\text{Re}(uv) = \text{Im}(uv)$ (and both $>0$).<br>
+            4. Equation: $24 - k^2 = 10k \implies k^2 + 10k - 24 = 0$.<br>
+            5. Factor: $(k+12)(k-2) = 0$.<br>
+            6. $k = 2$ or $k = -12$. Since $k$ is positive, <strong>$k = 2$</strong>.
+        </div>
+    </div>
+
+    <div id="q_mod" class="tab-content">
+        <h3>Question 2: Modulus Locus</h3>
+        <p>The complex number $z = k + 3i$ satisfies the equation $|z| = 5$.</p>
+        <p>Find the positive value of $k$.</p>
+        
+        <p>$k =$ <input type="number" id="ans_k2"></p>
+        <button id="btn_k2" onclick="checkK2()">Check</button>
+        <div id="fb_k2" class="feedback"></div>
+        <div id="sol_k2" class="solution-reveal">
+            <strong>Solution:</strong><br>
+            1. Formula for modulus: $|x+iy| = \sqrt{x^2+y^2}$.<br>
+            2. Substitute: $\sqrt{k^2 + 3^2} = 5$.<br>
+            3. Square both sides: $k^2 + 9 = 25$.<br>
+            4. Solve: $k^2 = 16 \implies k = \pm 4$.<br>
+            5. Since positive, <strong>$k = 4$</strong>.
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- GRAPHING ENGINE (320x320 Aligned) ---
+    const SCALE = 20; 
+    
+    function drawGrid(svgId, size) {
+        const svg = document.getElementById(svgId);
+        svg.innerHTML = `
+            <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#333" /></marker>
+            </defs>
+        `;
+        const center = size / 2;
+        
+        // Grid Lines
+        for(let i=0; i<=size; i+=SCALE) {
+            let stroke = (i === center) ? "#000" : "#eee";
+            let width = (i === center) ? 2 : 1;
+            svg.innerHTML += `<line x1="${i}" y1="0" x2="${i}" y2="${size}" stroke="${stroke}" stroke-width="${width}" />`;
+            svg.innerHTML += `<line x1="0" y1="${i}" x2="${size}" y2="${i}" stroke="${stroke}" stroke-width="${width}" />`;
+        }
+
+        // Labels (Aligned)
+        for(let i=-7; i<=7; i++) {
+            if(i===0) continue;
+            let pos = center + (i * SCALE);
+            // X Axis
+            svg.innerHTML += `<text x="${pos}" y="${center+15}" text-anchor="middle">${i}</text>`;
+            // Y Axis
+            svg.innerHTML += `<text x="${center+8}" y="${pos}" dominant-baseline="middle" text-anchor="start">${-i}</text>`;
+        }
+        svg.innerHTML += `<text x="${size-25}" y="${center-8}" font-weight="bold">Re</text>`;
+        svg.innerHTML += `<text x="${center+8}" y="15" font-weight="bold">Im</text>`;
+    }
+
+    function plotZ(svgId, r, i, color, label, size, showComp=false) {
+        const svg = document.getElementById(svgId);
+        const center = size / 2;
+        const x = center + (r * SCALE);
+        const y = center - (i * SCALE);
+        
+        // Vector
+        svg.innerHTML += `<line x1="${center}" y1="${center}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="2" marker-end="url(#arrow)" />`;
+        svg.innerHTML += `<circle cx="${x}" cy="${y}" r="3" fill="${color}" />`;
+        svg.innerHTML += `<text x="${x+5}" y="${y-5}" fill="${color}" font-weight="bold">${label}</text>`;
+
+        if(showComp) {
+            // Modulus line label
+            let midX = (center + x)/2;
+            let midY = (center + y)/2;
+            // Arc for Arg
+            // Simple path for Arg (rough approx for viz)
+            // Not strictly drawing arc path to avoid complexity bugs, just text
+        }
+    }
+
+    // --- VISUALISER LOGIC ---
+    function updateVisuals() {
+        drawGrid('vizGraph', 320);
+        let r = parseFloat(document.getElementById('z_r').value) || 0;
+        let i = parseFloat(document.getElementById('z_i').value) || 0;
+        
+        // Plot Z
+        plotZ('vizGraph', r, i, '#2980b9', 'z', 320);
+        
+        // Plot Conjugate
+        plotZ('vizGraph', r, -i, '#e74c3c', 'z̅', 320);
+
+        // Calc Values
+        let mod = Math.sqrt(r*r + i*i).toFixed(2);
+        let arg = Math.atan2(i, r).toFixed(2);
+        
+        document.getElementById('calc_display').innerHTML = `
+            $|z| = ${mod}$ <br> 
+            $\\arg(z) = ${arg}^c$ <br> 
+            $\\bar{z} = ${r} ${i<0 ? '+' : '-'} ${Math.abs(i)}i$
+        `;
+        MathJax.typesetPromise();
+    }
+
+    // --- PRACTICE LOGIC ---
+    let p_z = {r:0, i:0};
+    let attempts = 0;
+    
+    function newProblem() {
+        // Random int between -5 and 5, excluding 0
+        do { p_z.r = Math.floor(Math.random()*10)-5; } while(p_z.r===0);
+        do { p_z.i = Math.floor(Math.random()*10)-5; } while(p_z.i===0);
+        
+        drawGrid('practiceGraph', 320);
+        plotZ('practiceGraph', p_z.r, p_z.i, '#2980b9', 'z', 320);
+        
+        // Reset UI
+        document.getElementById('phase1').style.display = 'block';
+        document.getElementById('phase2').style.display = 'none';
+        document.getElementById('fb_p1').innerHTML = "";
+        document.getElementById('fb_p2').innerHTML = "";
+        document.getElementById('sol_p2').style.display = "none";
+        
+        document.getElementById('p_r').value = "";
+        document.getElementById('p_i').value = "";
+        document.getElementById('ans_mod').value = "";
+        document.getElementById('ans_arg').value = "";
+        document.getElementById('ans_conj_r').value = "";
+        document.getElementById('ans_conj_i').value = "";
+        attempts = 0;
+    }
+
+    function checkPhase1() {
+        let ur = parseFloat(document.getElementById('p_r').value);
+        let ui = parseFloat(document.getElementById('p_i').value);
+        
+        if(ur === p_z.r && ui === p_z.i) {
+            document.getElementById('fb_p1').innerHTML = "✅ Correct! Now find the properties.";
+            document.getElementById('fb_p1').className = "feedback correct";
+            document.getElementById('phase2').style.display = "block";
+        } else {
+            document.getElementById('fb_p1').innerHTML = "❌ Check the grid again.";
+            document.getElementById('fb_p1').className = "feedback wrong";
+        }
+    }
+
+    function checkPhase2() {
+        attempts++;
+        let uMod = parseFloat(document.getElementById('ans_mod').value);
+        let uArg = parseFloat(document.getElementById('ans_arg').value);
+        let uCr = parseFloat(document.getElementById('ans_conj_r').value);
+        let uCi = parseFloat(document.getElementById('ans_conj_i').value);
+
+        let realMod = Math.sqrt(p_z.r**2 + p_z.i**2);
+        let realArg = Math.atan2(p_z.i, p_z.r);
+        
+        let modOk = Math.abs(uMod - realMod) < 0.1;
+        let argOk = Math.abs(uArg - realArg) < 0.1;
+        let conjOk = (uCr === p_z.r && uCi === -p_z.i);
+
+        let fb = document.getElementById('fb_p2');
+        let sol = document.getElementById('sol_p2');
+
+        if(modOk && argOk && conjOk) {
+            fb.innerHTML = "✅ All Correct! Well done.";
+            fb.className = "feedback correct";
+            // Plot Conjugate
+            plotZ('practiceGraph', p_z.r, -p_z.i, '#e74c3c', 'z̅', 320);
+        } else {
+            if(attempts < 3) {
+                fb.innerHTML = `❌ Incorrect. Try again (${attempts}/3)`;
+                fb.className = "feedback wrong";
+            } else {
+                fb.innerHTML = "❌ 3 Attempts used. Solution shown.";
+                fb.className = "feedback wrong";
+                sol.style.display = "block";
+                sol.innerHTML = `
+                    <strong>Solution:</strong><br>
+                    $z = ${p_z.r} ${p_z.i > 0 ? '+' : ''}${p_z.i}i$<br>
+                    $|z| = \\sqrt{${p_z.r}^2 + ${p_z.i}^2} = ${realMod.toFixed(2)}$<br>
+                    $\\arg(z) = \\tan^{-1}(${p_z.i}/${p_z.r}) = ${realArg.toFixed(2)}$ rad<br>
+                    $\\bar{z} = ${p_z.r} ${-p_z.i > 0 ? '+' : ''}${-p_z.i}i$
+                `;
+                MathJax.typesetPromise();
+                plotZ('practiceGraph', p_z.r, -p_z.i, '#e74c3c', 'z̅', 320);
+            }
+        }
+    }
+
+    // --- EXAM QUESTIONS ---
+    let k1_attempts = 0;
+    function checkK1() {
+        k1_attempts++;
+        let val = parseFloat(document.getElementById('ans_k1').value);
+        let fb = document.getElementById('fb_k1');
+        let sol = document.getElementById('sol_k1');
+        
+        if(val === 2) {
+            fb.innerHTML = "✅ Correct!";
+            fb.className = "feedback correct";
+            document.getElementById('btn_k1').disabled = true;
+        } else {
+            if(k1_attempts < 3) {
+                fb.innerHTML = "❌ Try again.";
+                fb.className = "feedback wrong";
+            } else {
+                fb.innerHTML = "❌ Solution Revealed.";
+                sol.style.display = "block";
+                document.getElementById('btn_k1').disabled = true;
+                MathJax.typesetPromise();
+            }
+        }
+    }
+
+    let k2_attempts = 0;
+    function checkK2() {
+        k2_attempts++;
+        let val = parseFloat(document.getElementById('ans_k2').value);
+        let fb = document.getElementById('fb_k2');
+        let sol = document.getElementById('sol_k2');
+        
+        if(val === 4) {
+            fb.innerHTML = "✅ Correct!";
+            fb.className = "feedback correct";
+            document.getElementById('btn_k2').disabled = true;
+        } else {
+            if(k2_attempts < 3) {
+                fb.innerHTML = "❌ Try again.";
+                fb.className = "feedback wrong";
+            } else {
+                fb.innerHTML = "❌ Solution Revealed.";
+                sol.style.display = "block";
+                document.getElementById('btn_k2').disabled = true;
+                MathJax.typesetPromise();
+            }
+        }
+    }
+
+    function openTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // Init
+    drawGrid('vizGraph', 320);
+    updateVisuals();
+    newProblem();
+
+</script>
+
+</body>
+</html>
