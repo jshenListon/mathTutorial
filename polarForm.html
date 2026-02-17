@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3: Polar Form (r cis θ)</title>
+    
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        processEscapes: true
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2980b9; /* Blue */
+            --accent: #d35400; /* Burnt Orange */
+            --bg: #f4f6f7;
+            --card: #ffffff;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #2c3e50; padding: 20px; max-width: 950px; margin: 0 auto; }
+        
+        h1, h2 { text-align: center; color: var(--primary); }
+        .card { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        
+        /* Flex Layout */
+        .flex-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .flex-item { flex: 1; min-width: 320px; }
+
+        /* Graph Box */
+        .graph-box { text-align: center; border: 1px solid #bdc3c7; background: white; border-radius: 8px; position: relative; user-select: none; }
+        svg { background-color: #fff; cursor: crosshair; display: block; margin: 0 auto; }
+        
+        /* Interactive Draggable Graph */
+        #demoGraph { cursor: grab; }
+        #demoGraph:active { cursor: grabbing; }
+
+        /* Text Styles */
+        text { font-family: sans-serif; font-size: 11px; fill: #555; pointer-events: none; }
+        .label-r { font-weight: bold; fill: #d35400; font-size: 12px; background: rgba(255,255,255,0.8); }
+        .label-theta { font-weight: bold; fill: #27ae60; font-size: 12px; }
+
+        /* Inputs & Buttons */
+        .input-group { background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        input[type="number"] { width: 70px; padding: 5px; text-align: center; border: 2px solid #bdc3c7; border-radius: 4px; font-weight: bold; }
+        
+        button { padding: 8px 15px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; background: var(--primary); }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:disabled { background: #95a5a6; cursor: not-allowed; opacity: 0.7; }
+
+        .btn-switch { background: #7f8c8d; font-size: 0.9rem; }
+        .btn-check { background: var(--accent); }
+
+        /* Feedback & Solutions */
+        .feedback { margin-top: 10px; font-weight: bold; min-height: 20px; }
+        .correct { color: #27ae60; }
+        .wrong { color: #c0392b; }
+        .solution-reveal { display: none; background: #fff8e1; border: 1px solid #ffe082; padding: 15px; margin-top: 10px; border-radius: 5px; text-align: left; }
+
+        /* Explanation Box */
+        .step-display {
+            background: #fff; border-left: 4px solid var(--accent); padding: 15px; margin-top: 15px; text-align: left; font-family: 'Segoe UI', sans-serif;
+        }
+        .comparison-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 0.9rem; }
+        .comparison-table td, .comparison-table th { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .comparison-table th { background-color: #eee; }
+
+    </style>
+</head>
+<body>
+
+<h1>Polar Form: $r \text{ cis } \theta$</h1>
+<p style="text-align:center;">Level 3 Complex Numbers</p>
+
+<div class="card">
+    <h2>1. Origin of Polar Form (Interactive)</h2>
+    <p style="text-align:center; color:#7f8c8d;">👇 <strong>Drag the blue point</strong> around to see how $r$ and $\theta$ change!</p>
+    
+    <div class="flex-container">
+        <div class="flex-item">
+            <div class="graph-box">
+                <svg id="demoGraph" width="320" height="320" viewBox="0 0 320 320">
+                    </svg>
+            </div>
+        </div>
+
+        <div class="flex-item">
+            <div class="input-group" style="text-align:left; font-size:1.1rem;">
+                <p style="color:#2980b9;"><strong>Rectangular ($x + iy$):</strong><br>
+                $x =$ <strong><span id="demo_x">0</span></strong> <br>
+                $y =$ <strong><span id="demo_y">0</span></strong></p>
+                <hr>
+                <p style="color:#d35400;"><strong>Polar ($r \text{ cis } \theta$):</strong><br>
+                Modulus $r = \sqrt{x^2+y^2} =$ <strong><span id="demo_r">0</span></strong><br>
+                Argument $\theta = \tan^{-1}(y/x) =$ <strong><span id="demo_th">0</span>°</strong></p>
+            </div>
+            <div class="formula-box" style="background:#e8f6f3; padding:10px; border-left:4px solid #16a085;">
+                <strong>Why is this better?</strong><br>
+                Rectangular form is great for adding.<br>
+                <strong>Polar form</strong> is superior for multiplication because it simply <strong>Stretches ($r$)</strong> and <strong>Rotates ($\theta$)</strong> the vector.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>2. Interactive Converter</h2>
+    <p>Convert exact values and see the calculation steps.</p>
+    
+    <div class="flex-container">
+        <div class="flex-item">
+            <div style="text-align:center; margin-bottom:15px;">
+                <button class="btn-switch" onclick="setMode('rect')">Input Rectangular ($x, y$)</button>
+                <button class="btn-switch" onclick="setMode('polar')">Input Polar ($r, \theta$)</button>
+            </div>
+
+            <div id="input_rect" class="input-group">
+                <h3>Rectangular $\to$ Polar</h3>
+                <p>$z =$ <input type="number" id="in_x" value="3"> + <input type="number" id="in_y" value="4">$i$</p>
+                <button onclick="convertRectToPolar()">Convert</button>
+            </div>
+
+            <div id="input_polar" class="input-group" style="display:none;">
+                <h3>Polar $\to$ Rectangular</h3>
+                <p>$z =$ <input type="number" id="in_r" value="5"> $\text{cis}$ <input type="number" id="in_th" value="0.93"> rad</p>
+                <button onclick="convertPolarToRect()">Convert</button>
+            </div>
+
+            <div id="step_display" class="step-display">
+                Click "Convert" to see the math here.
+            </div>
+        </div>
+
+        <div class="flex-item">
+            <div class="graph-box">
+                <svg id="vizGraph" width="320" height="320" viewBox="0 0 320 320">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#333" /></marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>3. Try Yourself</h2>
+    
+    <div class="flex-container">
+        <div class="flex-item" style="max-width:350px;">
+            <div class="graph-box">
+                <svg id="practiceGraph" width="320" height="320" viewBox="0 0 320 320"></svg>
+            </div>
+            <div style="text-align:center; margin-top:10px;">
+                <button onclick="newProblem()" style="background:#7f8c8d;">🔄 New Problem</button>
+            </div>
+        </div>
+
+        <div class="flex-item">
+            <div id="quiz_area" class="input-group">
+                <h3 id="q_title">Loading...</h3>
+                <p id="q_desc">Click 'New Problem' to start.</p>
+                
+                <div id="q1_inputs" style="display:none;">
+                    $r =$ <input type="number" id="ans_q1_r"> (2 d.p.)<br><br>
+                    $\theta =$ <input type="number" id="ans_q1_th"> rad (2 d.p.)<br><br>
+                    <button class="btn-check" onclick="checkQ1()">Check Polar</button>
+                </div>
+
+                <div id="q2_inputs" style="display:none;">
+                    $x =$ <input type="number" id="ans_q2_x"> (2 d.p.)<br><br>
+                    $y =$ <input type="number" id="ans_q2_y"> (2 d.p.)<br><br>
+                    <button class="btn-check" onclick="checkQ2()">Check Rectangular</button>
+                </div>
+
+                <div id="fb_quiz" class="feedback"></div>
+                <div id="sol_quiz" class="solution-reveal"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- GRAPHING ENGINE ---
+    const SCALE = 20; 
+    const CENTER = 160; // 320/2
+
+    function drawGrid(svgId, size) {
+        const svg = document.getElementById(svgId);
+        svg.innerHTML = `
+            <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#333" /></marker>
+            </defs>
+        `;
+        
+        // Grid Lines
+        for(let i=0; i<=size; i+=SCALE) {
+            let stroke = (i === CENTER) ? "#000" : "#eee";
+            let width = (i === CENTER) ? 2 : 1;
+            svg.innerHTML += `<line x1="${i}" y1="0" x2="${i}" y2="${size}" stroke="${stroke}" stroke-width="${width}" />`;
+            svg.innerHTML += `<line x1="0" y1="${i}" x2="${size}" y2="${i}" stroke="${stroke}" stroke-width="${width}" />`;
+        }
+
+        // Labels
+        for(let i=-7; i<=7; i++) {
+            if(i===0) continue;
+            let pos = CENTER + (i * SCALE);
+            svg.innerHTML += `<text x="${pos}" y="${CENTER+15}" text-anchor="middle">${i}</text>`;
+            svg.innerHTML += `<text x="${CENTER+8}" y="${pos}" dominant-baseline="middle" text-anchor="start">${-i}</text>`;
+        }
+        svg.innerHTML += `<text x="${size-25}" y="${CENTER-8}" font-weight="bold">Re</text>`;
+        svg.innerHTML += `<text x="${CENTER+8}" y="15" font-weight="bold">Im</text>`;
+        
+        // Add container group for plots so they are above grid
+        svg.innerHTML += `<g id="${svgId}_plots"></g>`;
+    }
+
+    // Helper: Describe Arc Path
+    function describeArc(x, y, radius, startAngle, endAngle) {
+        var start = (startAngle * Math.PI) / 180;
+        var end = (endAngle * Math.PI) / 180;
+        var startX = x + radius; 
+        var startY = y;
+        var endX = x + radius * Math.cos(-end);
+        var endY = y + radius * Math.sin(-end);
+        var largeArcFlag = Math.abs(end - start) <= Math.PI ? "0" : "1";
+        var d = [
+            "M", startX, startY,
+            "A", radius, radius, 0, largeArcFlag, (endAngle > 0 ? 0 : 1), endX, endY
+        ].join(" ");
+        return d;
+    }
+
+    function plotZ(svgId, r, i, color, label, size) {
+        const group = document.getElementById(svgId + "_plots");
+        const x = CENTER + (r * SCALE);
+        const y = CENTER - (i * SCALE);
+        
+        // 1. Draw Angle Arc (Theta)
+        let angle = Math.atan2(i, r) * 180 / Math.PI;
+        // Basic arc rendering for visual check
+        let arcPath = describeArc(CENTER, CENTER, 25, 0, angle);
+        group.innerHTML += `<path d="${arcPath}" fill="none" stroke="#27ae60" stroke-width="2" />`;
+        
+        // 2. Vector Line
+        group.innerHTML += `<line x1="${CENTER}" y1="${CENTER}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="2" marker-end="url(#arrow)" />`;
+        
+        // 3. Modulus Label (r)
+        let midX_vec = (CENTER + x) / 2;
+        let midY_vec = (CENTER + y) / 2;
+        let modVal = Math.sqrt(r*r + i*i).toFixed(1);
+        group.innerHTML += `<rect x="${midX_vec-12}" y="${midY_vec-8}" width="24" height="14" fill="white" opacity="0.8" rx="3" />`;
+        group.innerHTML += `<text x="${midX_vec}" y="${midY_vec+3}" fill="${color}" font-weight="bold" text-anchor="middle" font-size="10">r=${modVal}</text>`;
+
+        // 4. Dot & Label
+        group.innerHTML += `<circle cx="${x}" cy="${y}" r="4" fill="${color}" />`;
+        group.innerHTML += `<text x="${x+8}" y="${y-5}" fill="${color}" font-weight="bold" font-size="12">${label}</text>`;
+    }
+
+    // --- INTERACTIVE DEMO (SECTION 1) ---
+    // Initialize Demo
+    let demoSvg = document.getElementById('demoGraph');
+    let isDragging = false;
+
+    function initDemo() {
+        drawGrid('demoGraph', 320);
+        updateDemo(3, 4);
+        
+        demoSvg.addEventListener('mousedown', startDrag);
+        demoSvg.addEventListener('mousemove', drag);
+        demoSvg.addEventListener('mouseup', endDrag);
+        demoSvg.addEventListener('mouseleave', endDrag);
+        
+        demoSvg.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e.touches[0]); });
+        demoSvg.addEventListener('touchmove', (e) => { e.preventDefault(); drag(e.touches[0]); });
+        demoSvg.addEventListener('touchend', endDrag);
+    }
+
+    function startDrag(e) { isDragging = true; drag(e); }
+    function endDrag() { isDragging = false; }
+
+    function drag(e) {
+        if(!isDragging) return;
+        
+        let rect = demoSvg.getBoundingClientRect();
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+        
+        let svgX = clientX - rect.left;
+        let svgY = clientY - rect.top;
+        
+        let mathX = (svgX - CENTER) / SCALE;
+        let mathY = (CENTER - svgY) / SCALE;
+        
+        mathX = Math.round(mathX * 2) / 2;
+        mathY = Math.round(mathY * 2) / 2;
+        
+        if(mathX < -7) mathX = -7; if(mathX > 7) mathX = 7;
+        if(mathY < -7) mathY = -7; if(mathY > 7) mathY = 7;
+        
+        updateDemo(mathX, mathY);
+    }
+
+    function updateDemo(x, y) {
+        drawGrid('demoGraph', 320); // Lazy redraw
+        const group = document.getElementById("demoGraph_plots");
+        
+        // Triangle Legs
+        let svgX = CENTER + x*SCALE;
+        let svgY = CENTER - y*SCALE;
+        group.innerHTML += `<line x1="${CENTER}" y1="${svgY}" x2="${svgX}" y2="${svgY}" stroke="#bdc3c7" stroke-dasharray="4" />`;
+        group.innerHTML += `<line x1="${svgX}" y1="${CENTER}" x2="${svgX}" y2="${svgY}" stroke="#bdc3c7" stroke-dasharray="4" />`;
+        
+        plotZ('demoGraph', x, y, '#2980b9', 'z', 320);
+        
+        // Update Text (Standard HTML, no MathJax interference)
+        document.getElementById('demo_x').innerText = x;
+        document.getElementById('demo_y').innerText = y;
+        document.getElementById('demo_r').innerText = Math.sqrt(x*x + y*y).toFixed(2);
+        document.getElementById('demo_th').innerText = (Math.atan2(y, x) * 180 / Math.PI).toFixed(1);
+    }
+
+
+    // --- CONVERTER LOGIC ---
+    function setMode(mode) {
+        document.getElementById('input_rect').style.display = (mode === 'rect') ? 'block' : 'none';
+        document.getElementById('input_polar').style.display = (mode === 'polar') ? 'block' : 'none';
+        document.getElementById('step_display').innerHTML = "Enter values and click Convert.";
+        drawGrid('vizGraph', 320);
+    }
+
+    function convertRectToPolar() {
+        drawGrid('vizGraph', 320);
+        let x = parseFloat(document.getElementById('in_x').value);
+        let y = parseFloat(document.getElementById('in_y').value);
+        
+        let r = Math.sqrt(x*x + y*y);
+        let theta = Math.atan2(y, x);
+        
+        plotZ('vizGraph', x, y, '#2980b9', 'z', 320);
+        
+        document.getElementById('step_display').innerHTML = `
+            <strong>Step 1: Find Modulus ($r$)</strong><br>
+            Using Pythagoras: $r = \\sqrt{x^2 + y^2}$<br>
+            $r = \\sqrt{(${x})^2 + (${y})^2} = \\sqrt{${(x*x+y*y).toFixed(2)}} = \\mathbf{${r.toFixed(2)}}$<br><br>
+            
+            <strong>Step 2: Find Argument ($\\theta$)</strong><br>
+            Using Trig: $\\theta = \\tan^{-1}(y/x)$<br>
+            $\\theta = \\tan^{-1}(${y}/${x}) = \\mathbf{${theta.toFixed(2)} \\text{ rad}}$<br><br>
+            
+            <strong>Final Polar Form:</strong><br>
+            $z = ${r.toFixed(2)} \\text{ cis } ${theta.toFixed(2)}$
+        `;
+        MathJax.typesetPromise();
+    }
+
+    function convertPolarToRect() {
+        drawGrid('vizGraph', 320);
+        let r = parseFloat(document.getElementById('in_r').value);
+        let theta = parseFloat(document.getElementById('in_th').value);
+        
+        let x = r * Math.cos(theta);
+        let y = r * Math.sin(theta);
+        
+        plotZ('vizGraph', x, y, '#d35400', 'z', 320);
+        
+        document.getElementById('step_display').innerHTML = `
+            <strong>Step 1: Find Real Part ($x$)</strong><br>
+            $x = r \\cos(\\theta)$<br>
+            $x = ${r} \\times \\cos(${theta}) = \\mathbf{${x.toFixed(2)}}$<br><br>
+            
+            <strong>Step 2: Find Imaginary Part ($y$)</strong><br>
+            $y = r \\sin(\\theta)$<br>
+            $y = ${r} \\times \\sin(${theta}) = \\mathbf{${y.toFixed(2)}}$<br><br>
+            
+            <strong>Final Rectangular Form:</strong><br>
+            $z = ${x.toFixed(2)} + ${y.toFixed(2)}i$
+        `;
+        MathJax.typesetPromise();
+    }
+
+    // --- PRACTICE LOGIC ---
+    let q_type = 0; 
+    let p_z = {x:0, y:0, r:0, th:0};
+    let attempts = 0;
+
+    function newProblem() {
+        attempts = 0;
+        document.getElementById('fb_quiz').innerHTML = "";
+        document.getElementById('sol_quiz').style.display = "none";
+        
+        q_type = Math.random() > 0.5 ? 1 : 2;
+        
+        do {
+            p_z.x = Math.floor(Math.random() * 10) - 5;
+            p_z.y = Math.floor(Math.random() * 10) - 5;
+        } while (p_z.x === 0 || p_z.y === 0);
+
+        p_z.r = Math.sqrt(p_z.x**2 + p_z.y**2);
+        p_z.th = Math.atan2(p_z.y, p_z.x);
+
+        drawGrid('practiceGraph', 320);
+        plotZ('practiceGraph', p_z.x, p_z.y, '#2980b9', 'z', 320);
+
+        if(q_type === 1) {
+            document.getElementById('q_title').innerText = "Q: Rectangular → Polar";
+            document.getElementById('q_desc').innerHTML = `Look at the graph. This is $z = ${p_z.x} + ${p_z.y}i$.<br>Convert it to Polar form.`;
+            document.getElementById('q1_inputs').style.display = 'block';
+            document.getElementById('q2_inputs').style.display = 'none';
+            document.getElementById('ans_q1_r').value = "";
+            document.getElementById('ans_q1_th').value = "";
+        } else {
+            document.getElementById('q_title').innerText = "Q: Polar → Rectangular";
+            document.getElementById('q_desc').innerHTML = `The graph shows $z$ with $r=${p_z.r.toFixed(2)}$ and $\\theta=${p_z.th.toFixed(2)}$.<br>Convert it to Rectangular form.`;
+            document.getElementById('q1_inputs').style.display = 'none';
+            document.getElementById('q2_inputs').style.display = 'block';
+            document.getElementById('ans_q2_x').value = "";
+            document.getElementById('ans_q2_y').value = "";
+        }
+        MathJax.typesetPromise();
+    }
+
+    function checkQ1() {
+        attempts++;
+        let ur = parseFloat(document.getElementById('ans_q1_r').value);
+        let uth = parseFloat(document.getElementById('ans_q1_th').value);
+        
+        let okR = Math.abs(ur - p_z.r) < 0.1;
+        let okTh = Math.abs(uth - p_z.th) < 0.1;
+
+        if(okR && okTh) { success(); } else { fail(1); }
+    }
+
+    function checkQ2() {
+        attempts++;
+        let ux = parseFloat(document.getElementById('ans_q2_x').value);
+        let uy = parseFloat(document.getElementById('ans_q2_y').value);
+        
+        let okX = Math.abs(ux - p_z.x) < 0.1;
+        let okY = Math.abs(uy - p_z.y) < 0.1;
+
+        if(okX && okY) { success(); } else { fail(2); }
+    }
+
+    function success() {
+        let fb = document.getElementById('fb_quiz');
+        fb.innerHTML = "✅ Correct!";
+        fb.className = "feedback correct";
+        document.getElementById('sol_quiz').style.display = 'none';
+    }
+
+    function fail(type) {
+        let fb = document.getElementById('fb_quiz');
+        if(attempts < 3) {
+            fb.innerHTML = `❌ Incorrect. Try again. (${attempts}/3)`;
+            fb.className = "feedback wrong";
+        } else {
+            fb.innerHTML = "❌ 3 Attempts used. Solution revealed.";
+            fb.className = "feedback wrong";
+            let sol = document.getElementById('sol_quiz');
+            sol.style.display = 'block';
+            
+            if(type === 1) {
+                sol.innerHTML = `
+                    <strong>Solution:</strong><br>
+                    $r = \\sqrt{(${p_z.x})^2 + (${p_z.y})^2} = ${p_z.r.toFixed(2)}$<br>
+                    $\\theta = \\tan^{-1}(${p_z.y}/${p_z.x}) = ${p_z.th.toFixed(2)}$ rad<br>
+                    <em>(Remember to check which quadrant you are in!)</em>
+                `;
+            } else {
+                sol.innerHTML = `
+                    <strong>Solution:</strong><br>
+                    $x = ${p_z.r.toFixed(2)} \\cos(${p_z.th.toFixed(2)}) = ${p_z.x}$<br>
+                    $y = ${p_z.r.toFixed(2)} \\sin(${p_z.th.toFixed(2)}) = ${p_z.y}$
+                `;
+            }
+            MathJax.typesetPromise();
+        }
+    }
+
+    // Init
+    drawGrid('vizGraph', 320);
+    drawGrid('practiceGraph', 320);
+    initDemo(); 
+    newProblem();
+
+</script>
+
+</body>
+</html>

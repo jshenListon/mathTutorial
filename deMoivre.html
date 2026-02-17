@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3: De Moivre's Theorem</title>
+    
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        processEscapes: true
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #8e44ad; /* Purple */
+            --accent: #27ae60; /* Green for Roots */
+            --bg: #f4f6f7;
+            --card: #ffffff;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #2c3e50; padding: 20px; max-width: 950px; margin: 0 auto; }
+        
+        h1, h2 { text-align: center; color: var(--primary); }
+        .card { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        
+        /* Flex Layout */
+        .flex-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .flex-item { flex: 1; min-width: 320px; }
+
+        /* Graph Box */
+        .graph-box { text-align: center; border: 1px solid #bdc3c7; background: white; border-radius: 8px; position: relative; user-select: none; }
+        svg { background-color: #fff; cursor: crosshair; display: block; margin: 0 auto; }
+
+        /* Audio Button */
+        .audio-btn { background: #ecf0f1; color: #333; border: 1px solid #ccc; padding: 5px 10px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; }
+        .audio-btn:hover { background: #ddd; }
+
+        /* Inputs & Buttons */
+        .input-group { background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        input[type="number"] { width: 60px; padding: 5px; text-align: center; border: 2px solid #bdc3c7; border-radius: 4px; font-weight: bold; }
+        
+        button { padding: 8px 15px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; background: var(--primary); }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:disabled { background: #95a5a6; cursor: not-allowed; opacity: 0.7; }
+
+        .btn-switch { background: #7f8c8d; font-size: 0.9rem; }
+        .btn-mode.active { background: var(--primary); color: white; border: 2px solid #2c3e50; }
+        .btn-mode { background: #ddd; color: #333; }
+
+        /* Feedback & Solutions */
+        .feedback { margin-top: 10px; font-weight: bold; min-height: 20px; }
+        .correct { color: #27ae60; }
+        .wrong { color: #c0392b; }
+        .solution-reveal { display: none; background: #fff8e1; border: 1px solid #ffe082; padding: 15px; margin-top: 10px; border-radius: 5px; text-align: left; }
+
+        /* Step Display */
+        .step-display {
+            background: #fff; border-left: 4px solid var(--primary); padding: 15px; margin-top: 15px; text-align: left; font-family: 'Segoe UI', sans-serif;
+        }
+        
+        /* Explanation Blocks */
+        .logic-block { border-left: 4px solid #2980b9; padding: 15px; background: #eaf2f8; margin-bottom: 15px; }
+        .proof-toggle { cursor: pointer; color: #2980b9; text-decoration: underline; font-weight: bold; }
+        .proof-content { display: none; margin-top: 10px; padding: 10px; border: 1px dashed #2980b9; background: #fff; }
+
+        /* Operator Demo Styles */
+        .op-demo-container { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; }
+        .op-text { max-width: 400px; }
+
+    </style>
+</head>
+<body>
+
+<h1>De Moivre's Theorem</h1>
+<p style="text-align:center;">
+    Pronunciation: <strong>"De Mwah - Vruh"</strong> 
+    <button class="audio-btn" onclick="speak()">🔊 Listen</button>
+</p>
+
+<div class="card">
+    <h2>1. The Logic: Multiplication as an Operator</h2>
+    
+    <div class="logic-block">
+        <h3>Think of $z$ as a Machine</h3>
+        <p>Multiplying by a complex number is a geometric transformation.</p>
+        <p>When you multiply by $w = r \text{ cis } \theta$, you apply two changes:</p>
+        <ol>
+            <li><strong>Stretch</strong> by factor $r$.</li>
+            <li><strong>Rotate</strong> by angle $\theta$.</li>
+        </ol>
+    </div>
+
+    <div class="input-group" style="background:#fff; border:1px solid #ccc; text-align:left;">
+        <h3 style="text-align:center; color:#2c3e50;">Visual Case Study: Multiplying by $2i$</h3>
+        
+        <div class="op-demo-container">
+            <div class="op-text">
+                <p><strong>The Operator ($2i$):</strong><br>
+                Polar: $2 \text{ cis } 90^\circ$. Instruction: "Double length, Rotate +90°".</p>
+                
+                <p><strong>The Algebra:</strong><br>
+                $2i \times (1+i) = 2i + 2i^2 = \mathbf{-2 + 2i}$.</p>
+                
+                <p style="background:#e8f6f3; padding:8px; border-radius:4px; border-left:4px solid #27ae60;">
+                    <strong>Confirming the "Stretch":</strong><br>
+                    Original $|1+i| = \sqrt{1^2+1^2} = \mathbf{\sqrt{2}} \approx 1.41$<br>
+                    Result $|-2+2i| = \sqrt{(-2)^2+2^2} = \sqrt{8} = \mathbf{2\sqrt{2}} \approx 2.82$<br>
+                    $2.82$ is exactly $2 \times 1.41$. The length doubled!
+                </p>
+            </div>
+
+            <div class="graph-box">
+                <svg width="250" height="250" viewBox="-130 -20 250 250"> 
+                    <defs>
+                        <marker id="arrow_sm" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#555" /></marker>
+                    </defs>
+                    <line x1="-120" y1="200" x2="120" y2="200" stroke="#333" stroke-width="1" />
+                    <line x1="0" y1="220" x2="0" y2="0" stroke="#333" stroke-width="1" />
+                    
+                    <line x1="0" y1="200" x2="40" y2="160" stroke="#2980b9" stroke-width="2" marker-end="url(#arrow_sm)" />
+                    <text x="45" y="160" fill="#2980b9" font-weight="bold">1+i</text>
+                    <text x="20" y="190" fill="#2980b9" font-size="10">r=√2</text>
+                    
+                    <line x1="0" y1="200" x2="-80" y2="120" stroke="#c0392b" stroke-width="2" marker-end="url(#arrow_sm)" />
+                    <text x="-110" y="115" fill="#c0392b" font-weight="bold">-2+2i</text>
+                    <text x="-60" y="180" fill="#c0392b" font-size="10">r=2√2</text>
+                    
+                    <path d="M 15 185 A 30 30 0 0 0 -15 185" fill="none" stroke="#27ae60" stroke-width="2" marker-end="url(#arrow_sm)" />
+                    <text x="-10" y="170" fill="#27ae60" font-size="10">+90°</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="logic-block" style="border-left-color: #f1c40f; background: #fef9e7;">
+        <h3>Connecting to De Moivre</h3>
+        <p>If multiplying by $z$ rotates by $\theta$, then multiplying $n$ times ($z^n$) rotates by $n\theta$.</p>
+        <p style="font-size:1.3rem;">$$z^n = r^n \text{ cis } (n\theta)$$</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>2. Visualiser: Powers & Roots</h2>
+    <div class="flex-container">
+        <div class="flex-item">
+            <div style="text-align:center; margin-bottom:15px;">
+                <button class="btn-mode active" onclick="setMode('power')" id="btn_power">Powers ($z^n$)</button>
+                <button class="btn-mode" onclick="setMode('root')" id="btn_root">Roots ($z^{1/n}$)</button>
+            </div>
+
+            <div id="ctrl_power" class="input-group">
+                <p><strong>Base ($z$):</strong> $r=$ <input type="number" id="p_r" value="1.1" step="0.1"> $\theta=$ <input type="number" id="p_th" value="30">°</p>
+                <p><strong>Power ($n$):</strong> <input type="range" id="p_n" min="1" max="12" value="1" oninput="updatePowerDisplay()"> <span id="n_val">1</span></p>
+                <p style="font-size:0.9rem; color:#666;">Apply "Stretch $r$, Rotate $\theta$" $n$ times.</p>
+            </div>
+
+            <div id="ctrl_root" class="input-group" style="display:none;">
+                <p><strong>Target ($w$):</strong> $r=$ <input type="number" id="r_r" value="64"> $\theta=$ <input type="number" id="r_th" value="0">°</p>
+                <p><strong>Root ($n$):</strong> <input type="range" id="r_n" min="2" max="8" value="3" oninput="updateRootDisplay()"> <span id="rn_val">3</span></p>
+                <p style="font-size:0.9rem; color:#666;">Solutions form a regular polygon.</p>
+            </div>
+
+            <div id="calc_display" class="step-display">Adjust sliders to visualize.</div>
+        </div>
+
+        <div class="flex-item">
+            <div class="graph-box">
+                <svg id="vizGraph" width="320" height="320" viewBox="0 0 320 320">
+                    <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#333" /></marker></defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>3. Try Yourself (Exam Style)</h2>
+    
+    <div class="flex-container">
+        <div class="flex-item" style="max-width:320px;">
+            <div class="graph-box">
+                <svg id="practiceGraph" width="320" height="320" viewBox="0 0 320 320"></svg>
+            </div>
+            <p style="text-align:center; font-size:0.9rem; color:#666;">Visual Explanation Area</p>
+        </div>
+
+        <div class="flex-item">
+            <div class="input-group" style="text-align:left;">
+                <h3>Q1: Calculating Powers</h3>
+                <p>If $z = 1 + i$, find $z^{8}$ in Rectangular form.</p>
+                <p>$z^8 =$ <input type="number" id="ans_q1_r"> + <input type="number" id="ans_q1_i">$i$</p>
+                <button onclick="checkQ1()" id="btn_q1">Check & Visualize</button>
+                <div id="fb_q1" class="feedback"></div>
+                <div id="sol_q1" class="solution-reveal">
+                    <strong>Solution:</strong><br>
+                    1. $|z| = \sqrt{2}$, $\arg(z) = 45^\circ$.<br>
+                    2. $z^8 = (\sqrt{2})^8 \text{ cis } (8 \times 45^\circ) = 16 \text{ cis } 360^\circ$.<br>
+                    3. $16 \text{ cis } 0^\circ = \mathbf{16}$.
+                </div>
+            </div>
+
+            <div class="input-group" style="text-align:left;">
+                <h3>Q2: Solving Equations (Roots)</h3>
+                <p>Solve $z^3 = 8i$. Find the first root in the first quadrant.</p>
+                <p>$z_1 =$ <input type="number" id="ans_q2_mod"> cis <input type="number" id="ans_q2_arg">°</p>
+                <button onclick="checkQ2()" id="btn_q2">Check & Visualize</button>
+                <div id="fb_q2" class="feedback"></div>
+                <div id="sol_q2" class="solution-reveal">
+                    <strong>Solution (All Roots):</strong><br>
+                    Target: $8 \text{ cis } 90^\circ$. Root $n=3$.<br>
+                    $r = \sqrt[3]{8} = 2$. Spacing $= 360/3 = 120^\circ$.<br>
+                    <strong>$z_1 = 2 \text{ cis } 30^\circ$</strong> (Base angle $90/3$)<br>
+                    <strong>$z_2 = 2 \text{ cis } 150^\circ$</strong> ($30+120$)<br>
+                    <strong>$z_3 = 2 \text{ cis } 270^\circ$</strong> ($150+120$)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function speak() {
+        let msg = new SpeechSynthesisUtterance("De Mwah Vruh");
+        msg.rate = 0.8; 
+        window.speechSynthesis.speak(msg);
+    }
+
+    function toggleProof() {
+        let el = document.getElementById('proof');
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+
+    const SCALE = 25; 
+    const CENTER = 160; 
+
+    function drawGrid(svgId) {
+        const svg = document.getElementById(svgId);
+        svg.innerHTML = `
+            <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#333" /></marker></defs>
+        `;
+        svg.innerHTML += `<line x1="0" y1="${CENTER}" x2="320" y2="${CENTER}" stroke="#333" stroke-width="1.5" />`;
+        svg.innerHTML += `<line x1="${CENTER}" y1="0" x2="${CENTER}" y2="320" stroke="#333" stroke-width="1.5" />`;
+        [1, 2, 3, 4, 5].forEach(r => {
+            svg.innerHTML += `<circle cx="${CENTER}" cy="${CENTER}" r="${r*SCALE}" fill="none" stroke="#eee" stroke-dasharray="4" />`;
+        });
+        svg.innerHTML += `<g id="${svgId}_plots"></g>`;
+    }
+
+    function plotPoint(svgId, r, thetaDeg, color, label, connectToOrigin=true) {
+        const group = document.getElementById(svgId + "_plots");
+        let thetaRad = thetaDeg * Math.PI / 180;
+        let x = CENTER + (r * SCALE * Math.cos(thetaRad));
+        let y = CENTER - (r * SCALE * Math.sin(thetaRad)); 
+        
+        if(connectToOrigin) {
+            group.innerHTML += `<line x1="${CENTER}" y1="${CENTER}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="1" />`;
+        }
+        group.innerHTML += `<circle cx="${x}" cy="${y}" r="3" fill="${color}" />`;
+        if(label) {
+            group.innerHTML += `<text x="${x+5}" y="${y-5}" fill="${color}" font-weight="bold" font-size="10">${label}</text>`;
+        }
+        return {x, y};
+    }
+
+    // --- VISUALISER LOGIC ---
+    let currentMode = 'power';
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn_' + mode).classList.add('active');
+        document.getElementById('ctrl_power').style.display = (mode === 'power') ? 'block' : 'none';
+        document.getElementById('ctrl_root').style.display = (mode === 'root') ? 'block' : 'none';
+        if(mode === 'power') updatePowerDisplay(); else updateRootDisplay();
+    }
+
+    function updatePowerDisplay() {
+        drawGrid('vizGraph');
+        let r = parseFloat(document.getElementById('p_r').value);
+        let th = parseFloat(document.getElementById('p_th').value);
+        let n = parseInt(document.getElementById('p_n').value);
+        document.getElementById('n_val').innerText = n;
+        
+        let points = [];
+        let group = document.getElementById("vizGraph_plots");
+
+        for(let k=1; k<=n; k++) {
+            let newR = Math.pow(r, k);
+            let newTh = th * k;
+            // Cap radius for viz
+            let displayR = newR > 6 ? 6 : newR; 
+            let pt = plotPoint('vizGraph', displayR, newTh, '#8e44ad', (k===n ? `z^${n}` : ''), false);
+            points.push(pt);
+        }
+
+        if(points.length > 1) {
+            let pathD = `M ${points[0].x} ${points[0].y}`;
+            for(let i=1; i<points.length; i++) {
+                pathD += ` L ${points[i].x} ${points[i].y}`;
+            }
+            group.innerHTML = `<path d="${pathD}" fill="none" stroke="#8e44ad" stroke-width="2" opacity="0.5" />` + group.innerHTML;
+        }
+        
+        let finalR = Math.pow(r, n).toFixed(2);
+        let finalTh = (th * n).toFixed(1);
+        document.getElementById('calc_display').innerHTML = `
+            <strong>Calculation:</strong><br>
+            $|z|^{${n}} = ${r}^{${n}} = ${finalR}$<br>
+            $\\arg(z^{${n}}) = ${n} \\times ${th}^\\circ = ${finalTh}^\\circ$
+        `;
+        MathJax.typesetPromise();
+    }
+
+    function updateRootDisplay() {
+        drawGrid('vizGraph');
+        let r = parseFloat(document.getElementById('r_r').value);
+        let th = parseFloat(document.getElementById('r_th').value);
+        let n = parseInt(document.getElementById('r_n').value);
+        document.getElementById('rn_val').innerText = n;
+        
+        let group = document.getElementById("vizGraph_plots");
+        let newR = Math.pow(r, 1/n);
+        let points = [];
+
+        for(let k=0; k<n; k++) {
+            let newTh = (th + 360*k) / n;
+            let pt = plotPoint('vizGraph', newR, newTh, '#27ae60', `z_${k+1}`, true);
+            points.push(pt);
+        }
+
+        if(points.length > 1) {
+            let pathD = `M ${points[0].x} ${points[0].y}`;
+            for(let i=1; i<points.length; i++) {
+                pathD += ` L ${points[i].x} ${points[i].y}`;
+            }
+            pathD += ` Z`; 
+            group.innerHTML = `<path d="${pathD}" fill="rgba(39, 174, 96, 0.1)" stroke="#27ae60" stroke-width="1" stroke-dasharray="4" />` + group.innerHTML;
+        }
+
+        document.getElementById('calc_display').innerHTML = `
+            <strong>Roots Calculation:</strong><br>
+            Modulus: $\\sqrt[${n}]{${r}} = ${newR.toFixed(2)}$<br>
+            Angle spacing: $360^\\circ / ${n} = ${(360/n).toFixed(1)}^\\circ$ apart.
+        `;
+        MathJax.typesetPromise();
+    }
+
+    // --- PRACTICE LOGIC ---
+    let q1_attempts = 0;
+    function checkQ1() {
+        q1_attempts++;
+        let r = parseFloat(document.getElementById('ans_q1_r').value);
+        let i = parseFloat(document.getElementById('ans_q1_i').value);
+        let fb = document.getElementById('fb_q1');
+        
+        // Show Visual Explanation: Spiral of (1+i)
+        drawGrid('practiceGraph');
+        let group = document.getElementById("practiceGraph_plots");
+        let rootR = Math.sqrt(2);
+        let rootTh = 45;
+        let pts = [];
+        for(let k=1; k<=8; k++) {
+            let curR = Math.pow(rootR, k);
+            let scaleR = curR > 6 ? 6 : curR; // Clamp for visibility
+            let curTh = rootTh * k;
+            let pt = plotPoint('practiceGraph', scaleR, curTh, '#8e44ad', k===8?'16':'', false);
+            pts.push(pt);
+        }
+        // Draw spiral
+        if(pts.length>0) {
+            let pathD = `M ${CENTER} ${CENTER}`;
+            pts.forEach(p => pathD += ` L ${p.x} ${p.y}`);
+            group.innerHTML += `<path d="${pathD}" fill="none" stroke="#8e44ad" stroke-width="2" />`;
+        }
+
+        if(Math.abs(r - 16) < 0.1 && Math.abs(i - 0) < 0.1) {
+            fb.innerHTML = "✅ Correct! See the spiral landing on the Real axis.";
+            fb.className = "feedback correct";
+            document.getElementById('sol_q1').style.display = "none";
+        } else {
+            if(q1_attempts < 3) {
+                fb.innerHTML = `❌ Incorrect. See the graph for a hint. (${q1_attempts}/3)`;
+                fb.className = "feedback wrong";
+            } else {
+                fb.innerHTML = "❌ Solution shown.";
+                fb.className = "feedback wrong";
+                document.getElementById('sol_q1').style.display = "block";
+            }
+        }
+    }
+
+    let q2_attempts = 0;
+    function checkQ2() {
+        q2_attempts++;
+        let mod = parseFloat(document.getElementById('ans_q2_mod').value);
+        let arg = parseFloat(document.getElementById('ans_q2_arg').value);
+        let fb = document.getElementById('fb_q2');
+        
+        // Show Visual Explanation: Triangle of Roots for 8i
+        drawGrid('practiceGraph');
+        let rVal = 2; // Cube root 8
+        let angles = [30, 150, 270];
+        let pts = [];
+        angles.forEach((ang, idx) => {
+            let pt = plotPoint('practiceGraph', rVal, ang, '#27ae60', `z_${idx+1}`, true);
+            pts.push(pt);
+        });
+        // Draw Triangle
+        let group = document.getElementById("practiceGraph_plots");
+        let pathD = `M ${pts[0].x} ${pts[0].y} L ${pts[1].x} ${pts[1].y} L ${pts[2].x} ${pts[2].y} Z`;
+        group.innerHTML = `<path d="${pathD}" fill="rgba(39, 174, 96, 0.1)" stroke="#27ae60" stroke-width="1" stroke-dasharray="4" />` + group.innerHTML;
+
+        if(Math.abs(mod - 2) < 0.1 && Math.abs(arg - 30) < 1) {
+            fb.innerHTML = "✅ Correct! Graph shows all 3 roots forming a triangle.";
+            fb.className = "feedback correct";
+            document.getElementById('sol_q2').style.display = "none";
+        } else {
+            if(q2_attempts < 3) {
+                fb.innerHTML = `❌ Incorrect. Check graph for the triangle. (${q2_attempts}/3)`;
+                fb.className = "feedback wrong";
+            } else {
+                fb.innerHTML = "❌ Solution shown.";
+                fb.className = "feedback wrong";
+                document.getElementById('sol_q2').style.display = "block";
+            }
+        }
+    }
+
+    // Init
+    drawGrid('practiceGraph'); // Empty grid at start
+    setMode('power');
+
+</script>
+
+</body>
+</html>
