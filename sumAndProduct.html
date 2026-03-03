@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCEA L3 Calculus | Sum & Product Rules</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .attempt-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .math-block {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .btn-primary {
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2), 0 2px 4px -1px rgba(79, 70, 229, 0.1);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+
+        .tab-btn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #4f46e5;
+            font-weight: 800;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #4f46e5;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .geogebra-frame {
+            border: 1px solid #e4e4e4;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-900 min-h-screen flex flex-col" x-data="calculusApp()">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 shadow-sm">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg rotate-3">
+                    $\sum$
+                </div>
+                <div>
+                    <h1 class="font-black text-2xl text-slate-800 leading-tight tracking-tight">Calculus L3</h1>
+                    <p class="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em]">Complex & Real Algebra</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Assessment Unit</span>
+                    <span class="text-xs font-bold text-slate-700">AS91577 (3.5)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-8 flex-grow w-full">
+        
+        <nav class="flex space-x-6 border-b border-slate-200 mb-8 px-2 overflow-x-auto">
+            <button @click="setTab(0)" class="tab-btn pb-4 text-sm uppercase tracking-wider font-semibold text-slate-500 whitespace-nowrap hover:text-indigo-500" :class="tab === 0 ? 'active' : ''">
+                0. The Hook
+            </button>
+            <button @click="setTab(1)" class="tab-btn pb-4 text-sm uppercase tracking-wider font-semibold text-slate-500 whitespace-nowrap hover:text-indigo-500" :class="tab === 1 ? 'active' : ''">
+                1. Quadratic DNA
+            </button>
+            <button @click="setTab(2)" class="tab-btn pb-4 text-sm uppercase tracking-wider font-semibold text-slate-500 whitespace-nowrap hover:text-indigo-500" :class="tab === 2 ? 'active' : ''">
+                2. Cubic Patterns
+            </button>
+            <button @click="setTab(3)" class="tab-btn pb-4 text-sm uppercase tracking-wider font-semibold text-slate-500 whitespace-nowrap hover:text-indigo-500 flex items-center gap-2" :class="tab === 3 ? 'active' : ''">
+                <i data-lucide="sword" class="w-4 h-4"></i> Exam Mastery
+            </button>
+        </nav>
+
+        <div x-show="tab === 0" x-transition.opacity.duration.500ms>
+            <div class="glass-card p-8 md:p-10 rounded-[2rem] shadow-xl shadow-slate-200/60 mb-8 border-t-8 border-t-blue-500">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">Reverse Engineering Reality</h2>
+                <h3 class="text-xl font-bold text-blue-600 mb-6">Why do we care about the sums and products of roots?</h3>
+                
+                <p class="text-slate-600 text-lg leading-relaxed mb-6">
+                    In high school, you are usually given an equation and asked to find the roots. But in real-world design, it is exactly the opposite. <strong>You know the roots you want, but you need to build the mathematical system to make them happen.</strong>
+                </p>
+
+                <div class="bg-blue-50 border border-blue-100 p-6 rounded-2xl mb-8">
+                    <h4 class="font-bold text-blue-900 text-lg mb-3 flex items-center gap-2">
+                        <i data-lucide="gamepad-2" class="w-5 h-5"></i> Video Game Physics & Water Fountains
+                    </h4>
+                    <p class="text-slate-700 leading-relaxed mb-4">
+                        Imagine you are programming the physics engine for a video game, or designing a synchronized water fountain at a theme park.  You want the water to shoot out of a hole at exactly $x = 1$ meter, and land perfectly in a drain at exactly $x = 3$ meters. Those target "zero points" are your <strong>roots</strong>.
+                    </p>
+                    
+                    <div class="bg-white p-5 rounded-xl border border-blue-200 shadow-sm mb-6">
+                        <p class="font-bold text-slate-800 mb-2">A Concrete Example:</p>
+                        <p class="text-slate-600 mb-2">Let a downward-opening parabola represent the water's path: $y = -x^2 + bx + c$, where $y$ is height and $x$ is horizontal distance. Your required roots are $\alpha = 1$ and $\beta = 3$.</p>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-2 mt-3 font-mono text-sm">
+                            <li>The <strong>sum</strong> of your roots is $1 + 3 = 4$. Because the quadratic rule is $\text{Sum} = -b/a$, and $a=-1$, this tells us $b = 4$.</li>
+                            <li>The <strong>product</strong> of your roots is $1 \times 3 = 3$. Because the rule is $\text{Product} = c/a$, and $a=-1$, this tells us $c = -3$.</li>
+                        </ul>
+                        <p class="text-slate-800 font-bold mt-4">You instantly know the exact mathematical code to write: $y = -x^2 + 4x - 3$!</p>
+                    </div>
+
+                    <div class="rounded-xl overflow-hidden shadow-sm border border-slate-200 bg-white p-2">
+                        <div class="flex items-center gap-2 mb-2 px-2 text-sm font-bold text-slate-500 uppercase tracking-wider">
+                            <i data-lucide="line-chart" class="w-4 h-4"></i> Visualization
+                        </div>
+                        <iframe 
+                            class="geogebra-frame"
+                            title="GeoGebra Interactive Graph of Parabolic Trajectory"
+                            src="https://www.geogebra.org/graphing?command=y=-x^2%2B4x-3;A=(1,0);B=(3,0)" 
+                            width="100%" 
+                            height="400" 
+                            frameborder="0"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 text-white p-6 rounded-2xl">
+                    <p class="font-medium text-slate-300 leading-relaxed">
+                        The <strong>Sum and Product Rules</strong> (Vieta's Formulas) are the mathematical bridge between reality and design. They allow engineers to instantly translate the physical outcomes they want (the roots) into the exact mathematical specifications (the coefficients) required to build the simulation.
+                    </p>
+                </div>
+                
+                <div class="mt-8 text-right">
+                    <button @click="setTab(1)" class="btn-primary bg-blue-600 text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">Discover the DNA <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="tab === 1" x-cloak x-transition.opacity.duration.500ms>
+            <div class="glass-card p-8 md:p-10 rounded-[2rem] shadow-xl shadow-slate-200/60 mb-8 border-t-8 border-t-indigo-500">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">The Discovery of Quadratic DNA</h2>
+                
+                <p class="text-slate-600 text-lg leading-relaxed mb-6">
+                    Let's stop memorizing formulas and build them ourselves. We know that if a quadratic has two roots, $\alpha$ and $\beta$, we can write it in its factored form. Watch what happens when we expand it:
+                </p>
+                
+                <div class="bg-slate-900 text-slate-100 p-6 md:p-8 rounded-2xl font-mono text-sm md:text-base mb-8 overflow-x-auto shadow-inner math-block border border-slate-700">
+                    <span class="text-indigo-400">// 1. Start with the factored form</span><br>
+                    $(x - \alpha)(x - \beta) = 0$<br><br>
+                    
+                    <span class="text-indigo-400">// 2. Expand the brackets</span><br>
+                    $x^2 - \beta x - \alpha x + \alpha\beta = 0$<br><br>
+                    
+                    <span class="text-emerald-400 font-bold">// 3. Factor out the 'x' in the middle</span><br>
+                    $x^2 - (\alpha + \beta)x + (\alpha\beta) = 0$
+                </div>
+
+                <div class="bg-indigo-50 border border-indigo-100 p-6 rounded-2xl mb-6">
+                    <h3 class="font-bold text-indigo-900 text-lg mb-2 uppercase tracking-widest text-xs">The Revelation</h3>
+                    <p class="text-indigo-800">
+                        Look closely at the final equation. The coefficient in the middle is <em>always</em> the <strong>negative sum</strong> of the roots. The constant at the end is <em>always</em> the <strong>product</strong> of the roots!
+                    </p>
+                    <p class="text-indigo-800 mt-4">
+                        If we have a standard quadratic $ax^2 + bx + c = 0$, we just divide everything by $a$ to make the front $1$:<br>
+                        $$x^2 + \frac{b}{a}x + \frac{c}{a} = 0$$
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 mt-4 text-center font-bold text-lg">
+                        <div class="bg-white p-3 rounded-lg border border-indigo-200 shadow-sm">Sum: $\alpha + \beta = -\frac{b}{a}$</div>
+                        <div class="bg-white p-3 rounded-lg border border-indigo-200 shadow-sm">Product: $\alpha\beta = \frac{c}{a}$</div>
+                    </div>
+                </div>
+
+                <div x-data="{ showProof: false }" class="mb-8">
+                    <button @click="showProof = !showProof" class="flex items-center gap-2 text-indigo-600 font-bold hover:text-indigo-800 transition-colors text-sm uppercase tracking-wide">
+                        <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="showProof ? 'rotate-180' : ''"></i>
+                        Prove it using the Quadratic Formula
+                    </button>
+                    <div x-show="showProof" x-collapse x-transition class="mt-4 bg-white border border-slate-200 p-6 rounded-xl shadow-inner">
+                        <p class="text-slate-700 mb-2">Let the two roots be defined by the quadratic formula:</p>
+                        <div class="math-block text-center text-slate-800 mb-4">
+                            $$ \alpha = \frac{-b + \sqrt{b^2-4ac}}{2a} \quad \text{and} \quad \beta = \frac{-b - \sqrt{b^2-4ac}}{2a} $$
+                        </div>
+                        
+                        <p class="font-bold text-slate-800 mb-1">1. The Sum Rule:</p>
+                        <div class="math-block bg-slate-50 p-4 rounded-lg border border-slate-100 mb-4 text-center">
+                            $$ \alpha + \beta = \frac{-b + \sqrt{b^2-4ac}}{2a} + \frac{-b - \sqrt{b^2-4ac}}{2a} = \frac{-2b}{2a} = \mathbf{-\frac{b}{a}} $$
+                        </div>
+
+                        <p class="font-bold text-slate-800 mb-1">2. The Product Rule:</p>
+                        <div class="math-block bg-slate-50 p-4 rounded-lg border border-slate-100 text-center">
+                            $$ \alpha \times \beta = \left(\frac{-b + \sqrt{b^2-4ac}}{2a}\right)\left(\frac{-b - \sqrt{b^2-4ac}}{2a}\right) $$<br>
+                            <em>Difference of squares numerator:</em><br>
+                            $$ = \frac{(-b)^2 - (\sqrt{b^2-4ac})^2}{(2a)^2} $$<br>
+                            $$ = \frac{b^2 - (b^2 - 4ac)}{4a^2} = \frac{4ac}{4a^2} = \mathbf{\frac{c}{a}} $$
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t-2 border-slate-100 pt-8 mt-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i data-lucide="zap" class="text-amber-500 w-6 h-6"></i>
+                        <h3 class="font-black text-xl text-slate-800">Learning Check</h3>
+                    </div>
+                    <p class="text-slate-600 mb-4 font-medium">A quadratic equation $2x^2 - 6x + k = 0$ has roots $\alpha$ and $\beta$. If the product of the roots ($\alpha\beta$) is exactly $5$, find the value of $k$.</p>
+                    
+                    <div class="flex items-center gap-4" x-show="!mq1.solved && mq1.attempts < 3">
+                        <input type="text" x-model="mq1.input" @keyup.enter="checkMq1" placeholder="k = ?" class="bg-white border-2 border-slate-200 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none font-bold w-48 text-xl">
+                        <button @click="checkMq1" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-600 transition-colors">Check</button>
+                    </div>
+
+                    <div x-show="mq1.feedback" class="mt-4 p-4 rounded-xl font-medium" :class="mq1.solved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'" x-text="mq1.feedback" x-transition></div>
+
+                    <div x-show="mq1.showSol" class="mt-6 bg-slate-50 p-6 rounded-2xl border border-slate-200" x-transition>
+                        <h4 class="font-bold text-slate-800 mb-2">Step-by-Step Solution:</h4>
+                        <div class="math-block text-slate-600">
+                            1. Identify $a, b, c$:<br>
+                            $a = 2$, $b = -6$, $c = k$<br><br>
+                            2. Use the Product Rule $\alpha\beta = \frac{c}{a}$:<br>
+                            $5 = \frac{k}{2}$<br><br>
+                            3. Solve for $k$:<br>
+                            $k = 5 \times 2$<br>
+                            $\mathbf{k = 10}$
+                        </div>
+                        <button @click="setTab(2)" class="mt-6 btn-primary bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">Scale up to Cubics <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="tab === 2" x-cloak x-transition.opacity.duration.500ms>
+            <div class="glass-card p-8 md:p-10 rounded-[2rem] shadow-xl shadow-slate-200/60 mb-8 border-t-8 border-t-emerald-500">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">Scaling Up to Cubics</h2>
+                <p class="text-slate-600 text-lg leading-relaxed mb-6">
+                    Math is about finding patterns that scale. What happens when we add a third root, $\gamma$? Let's expand $(x-\alpha)(x-\beta)(x-\gamma) = 0$ step-by-step to reveal the alternating pattern.
+                </p>
+
+                <div class="bg-slate-900 text-slate-100 p-6 md:p-8 rounded-2xl font-mono text-sm md:text-base mb-8 overflow-x-auto shadow-inner math-block border border-slate-700">
+                    <span class="text-emerald-400 font-bold">// 1. Start with the three roots in factored form</span><br>
+                    $(x - \alpha)(x - \beta)(x - \gamma) = 0$<br><br>
+                    
+                    <span class="text-emerald-400 font-bold">// 2. We already know the quadratic expansion of the first two brackets</span><br>
+                    $[x^2 - (\alpha+\beta)x + \alpha\beta](x - \gamma) = 0$<br><br>
+
+                    <span class="text-emerald-400 font-bold">// 3. Distribute the 'x' into the bracket, then distribute the '-γ'</span><br>
+                    $x(x^2 - (\alpha+\beta)x + \alpha\beta) - \gamma(x^2 - (\alpha+\beta)x + \alpha\beta) = 0$<br>
+                    $x^3 - (\alpha+\beta)x^2 + \alpha\beta x - \gamma x^2 + \gamma(\alpha+\beta)x - \alpha\beta\gamma = 0$<br><br>
+
+                    <span class="text-emerald-400 font-bold">// 4. Expand fully to see every term</span><br>
+                    $x^3 - \alpha x^2 - \beta x^2 + \alpha\beta x - \gamma x^2 + \alpha\gamma x + \beta\gamma x - \alpha\beta\gamma = 0$<br><br>
+
+                    <span class="text-emerald-400 font-bold">// 5. Group together by powers of x (x², x, constant)</span><br>
+                    $x^3 - (\alpha + \beta + \gamma)x^2 + (\alpha\beta + \alpha\gamma + \beta\gamma)x - (\alpha\beta\gamma) = 0$
+                </div>
+                
+                <p class="text-slate-600 mb-4">When we compare this expansion to our standard cubic equation $ax^3 + bx^2 + cx + d = 0$ (after dividing everything by $a$), we unlock the full set of Vieta's Formulas for Level 3 Calculus:</p>
+
+                <div class="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl mb-6">
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                            <span class="font-bold text-slate-600 text-sm uppercase tracking-wider">1. Sum of Roots</span>
+                            <span class="font-black text-xl text-emerald-700">$\sum \alpha = -\frac{b}{a}$</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                            <span class="font-bold text-slate-600 text-sm uppercase tracking-wider">2. Pairwise Product Sum</span>
+                            <span class="font-black text-xl text-emerald-700">$\sum \alpha\beta = \frac{c}{a}$</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                            <span class="font-bold text-slate-600 text-sm uppercase tracking-wider">3. Product of all Roots</span>
+                            <span class="font-black text-xl text-emerald-700">$\alpha\beta\gamma = -\frac{d}{a}$</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200 text-amber-800 text-sm font-medium mt-8">
+                    <i data-lucide="lightbulb" class="w-6 h-6 shrink-0"></i>
+                    <p><strong>Notice the pattern!</strong> The signs always alternate: Negative, Positive, Negative. This pattern continues into quartics ($x^4$) and beyond infinitely!</p>
+                </div>
+
+                <div class="mt-10 text-right border-t border-slate-100 pt-8">
+                    <button @click="setTab(3)" class="btn-primary bg-slate-900 text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">Start Exam Mastery <i data-lucide="sword" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="tab === 3" x-cloak x-transition.opacity.duration.500ms>
+            
+            <template x-if="!exam.finished">
+                <div class="glass-card rounded-[2rem] shadow-2xl shadow-slate-200 border border-slate-200 overflow-hidden border-t-8 border-t-slate-800">
+                    <div class="bg-slate-50 px-8 py-5 flex justify-between items-center border-b border-slate-200">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">NCEA Exam Mastery</span>
+                            <span class="text-lg font-bold text-slate-800" x-text="'Question ' + (exam.idx + 1) + ' of ' + exam.questions.length"></span>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Attempts</span>
+                            <div class="flex space-x-2">
+                                <template x-for="i in 3">
+                                    <div class="attempt-dot" :class="exam.attempts >= i ? 'bg-rose-500' : 'bg-slate-300'"></div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-8 md:p-10">
+                        <div class="mb-6 space-y-4">
+                            <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex gap-3 text-indigo-800 text-sm">
+                                <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                                <p><strong>Crucial Rule:</strong> If a polynomial has real coefficients, any complex roots must come in <strong>conjugate pairs</strong>. If $a+bi$ is a root, $a-bi$ is guaranteed to be a root as well!</p>
+                            </div>
+                            
+                            <div class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm text-sm text-center font-mono text-slate-700 flex flex-wrap justify-around font-bold">
+                                <span>$\sum \alpha = -b/a$</span>
+                                <span class="text-slate-300">|</span>
+                                <span>$\sum \alpha\beta = c/a$</span>
+                                <span class="text-slate-300">|</span>
+                                <span>$\alpha\beta\gamma = -d/a$</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <p class="text-2xl text-slate-800 leading-[1.6] font-semibold" x-html="exam.questions[exam.idx].q"></p>
+                        </div>
+
+                        <div class="space-y-4" x-show="!exam.showSol">
+                            
+                            <template x-if="!exam.questions[exam.idx].twoInputs">
+                                <div class="relative">
+                                    <input type="text" x-model="exam.input" @keyup.enter="checkExam"
+                                        placeholder="Final value..."
+                                        class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-6 py-5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 outline-none transition-all text-xl font-bold placeholder:text-slate-300 placeholder:font-normal">
+                                    <button @click="checkExam" class="absolute right-3 top-3 bottom-3 px-8 bg-slate-900 text-white rounded-xl font-bold hover:bg-indigo-600 transition-colors">
+                                        Check
+                                    </button>
+                                </div>
+                            </template>
+
+                            <template x-if="exam.questions[exam.idx].twoInputs">
+                                <div class="flex flex-col md:flex-row gap-4">
+                                    <input type="text" x-model="exam.input" :placeholder="exam.questions[exam.idx].p1" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-6 py-5 focus:border-indigo-500 outline-none transition-all text-xl font-bold">
+                                    <input type="text" x-model="exam.input2" :placeholder="exam.questions[exam.idx].p2" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-6 py-5 focus:border-indigo-500 outline-none transition-all text-xl font-bold">
+                                    <button @click="checkExam" class="px-8 py-5 bg-slate-900 text-white rounded-2xl font-bold hover:bg-indigo-600 transition-colors">Check</button>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div x-show="exam.feedback" x-transition class="mt-6 p-6 rounded-2xl border-2" 
+                             :class="exam.solved ? 'bg-emerald-50 border-emerald-100 text-emerald-800' : 'bg-amber-50 border-amber-100 text-amber-800'">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                                    <span class="text-xl" x-text="exam.solved ? '✨' : '🧐'"></span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-lg" x-text="exam.solved ? 'Correct!' : 'Hints'"></p>
+                                    <p class="mt-1 opacity-90 leading-relaxed" x-html="exam.feedback"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div x-show="exam.showSol" x-transition.duration.500ms class="mt-10 border-t border-slate-100 pt-10">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">?</span>
+                                <h3 class="text-lg font-extrabold text-slate-800 uppercase tracking-tight">Full Step-by-Step Working</h3>
+                            </div>
+                            <div class="bg-indigo-50/30 p-8 rounded-3xl text-slate-700 space-y-4 leading-relaxed border border-indigo-100/50 math-block" x-html="exam.questions[exam.idx].sol">
+                            </div>
+                            
+                            <button @click="nextExam" class="btn-primary mt-8 w-full bg-slate-900 text-white py-5 rounded-2xl font-bold hover:bg-indigo-600 transition-all flex items-center justify-center space-x-2">
+                                <span x-text="exam.idx === exam.questions.length - 1 ? 'View Final Results' : 'Next Question'"></span>
+                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template x-if="exam.finished">
+                <div class="text-center py-16 glass-card rounded-[2rem] border-t-8 border-t-indigo-600 animate-in zoom-in duration-500">
+                    <div class="w-24 h-24 bg-indigo-600 text-white rounded-[2rem] flex items-center justify-center mx-auto mb-8 text-4xl shadow-2xl rotate-12"><i data-lucide="award" class="w-12 h-12"></i></div>
+                    <h2 class="text-4xl font-black text-slate-800 mb-4 tracking-tighter">Module Complete!</h2>
+                    <p class="text-slate-500 text-lg mb-10 max-w-md mx-auto">
+                        You have successfully mastered Vieta's formulas and complex root logic.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-12">
+                        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200">
+                            <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Final Score</div>
+                            <div class="text-3xl font-black text-indigo-600" x-text="exam.score + '/' + exam.questions.length"></div>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200">
+                            <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Accuracy</div>
+                            <div class="text-3xl font-black text-indigo-600" x-text="Math.round((exam.score/exam.questions.length)*100) + '%'"></div>
+                        </div>
+                    </div>
+
+                    <button @click="resetExam" class="inline-flex items-center gap-2 text-indigo-600 font-bold hover:text-indigo-800 transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        <span>Restart Exam</span>
+                    </button>
+                </div>
+            </template>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t-4 border-indigo-500 py-10 mt-auto w-full">
+        <div class="text-center">
+            <p class="text-sm font-mono font-bold text-slate-100 tracking-widest uppercase">Designed by Mr. Shen</p>
+            <p class="text-xs text-slate-500 mt-2 font-mono">© 2026 SHN Agency. L3 Calculus Module.</p>
+        </div>
+    </footer>
+
+    <script>
+        function calculusApp() {
+            return {
+                tab: 0, 
+                
+                // Mini Quiz 1 State
+                mq1: {
+                    input: '',
+                    attempts: 0,
+                    solved: false,
+                    showSol: false,
+                    feedback: ''
+                },
+
+                // Exam State
+                exam: {
+                    idx: 0,
+                    input: '',
+                    input2: '',
+                    attempts: 0,
+                    solved: false,
+                    showSol: false,
+                    feedback: '',
+                    score: 0,
+                    finished: false,
+                    questions: [
+                        {
+                            q: "One root of the equation $z^3 + az^2 + bz - 10 = 0$ is $1 + 2i$. Find the values of the real constants $a$ and $b$.",
+                            ansA: "-4",
+                            ansB: "9",
+                            p1: "a =",
+                            p2: "b =",
+                            twoInputs: true,
+                            hints: [
+                                "Because the coefficients are real, if $1+2i$ is a root, its conjugate $1-2i$ MUST also be a root. You have two out of three roots!",
+                                "Calculate the product of the two complex roots: $(1+2i)(1-2i) = 1^2 + 2^2 = 5$.",
+                                "Use the Product of All Roots rule ($-d/a$) to find the third unknown root, $\\gamma$. Then use the Sum rules for $a$ and $b$."
+                            ],
+                            sol: `
+                                <p><strong>1. Identify the roots</strong><br>
+                                Roots are $1+2i$, its conjugate $1-2i$, and a third real root $\\gamma$.</p>
+                                
+                                <p><strong>2. Product of the roots</strong><br>
+                                Product rule: $\\alpha\\beta\\gamma = -\\frac{d}{a}$<br>
+                                $(1+2i)(1-2i)\\gamma = -\\frac{-10}{1}$<br>
+                                $(1^2 + 2^2)\\gamma = 10$<br>
+                                $5\\gamma = 10 \\implies \\gamma = 2$</p>
+
+                                <p><strong>3. Sum of the roots (Find 'a')</strong><br>
+                                Sum rule: $\\alpha + \\beta + \\gamma = -\\frac{b}{a}$<br>
+                                $(1+2i) + (1-2i) + 2 = -\\frac{a}{1}$<br>
+                                $4 = -a \\implies \\mathbf{a = -4}$</p>
+
+                                <p><strong>4. Pairwise Sum (Find 'b')</strong><br>
+                                Pairwise rule: $\\sum \\alpha\\beta = \\frac{c}{a}$<br>
+                                $(1+2i)(1-2i) + \\gamma(1+2i + 1-2i) = b$<br>
+                                $5 + 2(2) = b \\implies \\mathbf{b = 9}$</p>
+                            `
+                        },
+                        {
+                            q: "The roots of the equation $2z^3 - 12z^2 + pz + q = 0$ include the complex number $z = 1+3i$. Find the values of $p$ and $q$.",
+                            ansA: "36",
+                            ansB: "-80",
+                            p1: "p =",
+                            p2: "q =",
+                            twoInputs: true,
+                            hints: [
+                                "The roots are $1+3i$, $1-3i$, and $\\gamma$. Start with the Sum Rule ($-b/a$) because you know the $z^2$ coefficient is $-12$.",
+                                "Sum = $-(-12)/2 = 6$. So, $(1+3i) + (1-3i) + \\gamma = 6$. Find $\\gamma$!",
+                                "Now that you have all three roots ($1+3i, 1-3i$, and $4$), use the pairwise rule for $p$ and the product rule for $q$."
+                            ],
+                            sol: `
+                                <p><strong>1. Identify the roots</strong><br>
+                                Roots are $1+3i$, $1-3i$, and $\\gamma$.<br>
+                                Product of complex pair: $(1+3i)(1-3i) = 1^2 + 3^2 = 10$.</p>
+
+                                <p><strong>2. Sum of the roots (Find $\\gamma$)</strong><br>
+                                Sum rule: $\\alpha + \\beta + \\gamma = -\\frac{b}{a}$<br>
+                                $(1+3i) + (1-3i) + \\gamma = -\\frac{-12}{2}$<br>
+                                $2 + \\gamma = 6 \\implies \\gamma = 4$</p>
+
+                                <p><strong>3. Product of the roots (Find 'q')</strong><br>
+                                Product rule: $\\alpha\\beta\\gamma = -\\frac{d}{a}$<br>
+                                $10 \\times 4 = -\\frac{q}{2}$<br>
+                                $40 = -\\frac{q}{2} \\implies \\mathbf{q = -80}$</p>
+
+                                <p><strong>4. Pairwise Sum (Find 'p')</strong><br>
+                                Pairwise rule: $\\sum \\alpha\\beta = \\frac{c}{a}$<br>
+                                $(1+3i)(1-3i) + \\gamma(1+3i + 1-3i) = \\frac{p}{2}$<br>
+                                $10 + 4(2) = \\frac{p}{2}$<br>
+                                $18 = \\frac{p}{2} \\implies \\mathbf{p = 36}$</p>
+                            `
+                        },
+                        {
+                            q: "Consider the polynomial $z^3 - 4z^2 + kz - 36 = 0$. If one of the roots is a real number and the other two are purely imaginary numbers (meaning they have no real part, e.g., $mi$ and $-mi$), find the exact value of $k$.",
+                            ans: "9",
+                            twoInputs: false,
+                            hints: [
+                                "Let the roots be $\\alpha$, $mi$, and $-mi$. Use the Sum Rule to find $\\alpha$.",
+                                "Sum = $-(-4)/1 = 4$. So, $\\alpha + mi - mi = 4$. This means $\\alpha = 4$.",
+                                "Now use the Product Rule: $\\alpha(mi)(-mi) = 36$. Use this to find $m^2$, then use the Pairwise Rule to find $k$."
+                            ],
+                            sol: `
+                                <p><strong>1. Identify the roots</strong><br>
+                                Let the roots be $\\alpha$, $mi$, and $-mi$.<br>
+                                Notice that the sum of the imaginary roots is $0$, and their product is $(mi)(-mi) = -m^2 i^2 = m^2$.</p>
+
+                                <p><strong>2. Sum of the roots</strong><br>
+                                $\\alpha + mi - mi = -\\frac{-4}{1}$<br>
+                                $\\alpha = 4$</p>
+
+                                <p><strong>3. Product of the roots</strong><br>
+                                $\\alpha(mi)(-mi) = -\\frac{-36}{1}$<br>
+                                $4(m^2) = 36$<br>
+                                $m^2 = 9$</p>
+
+                                <p><strong>4. Pairwise Sum (Find 'k')</strong><br>
+                                $\\sum \\alpha\\beta = \\frac{c}{a}$<br>
+                                $(mi)(-mi) + \\alpha(mi) + \\alpha(-mi) = k$<br>
+                                $m^2 + 4(mi) - 4(mi) = k$<br>
+                                $m^2 = k$<br>
+                                Since $m^2 = 9$, therefore $\\mathbf{k = 9}$.</p>
+                            `
+                        }
+                    ]
+                },
+
+                init() {
+                    this.$watch('tab', () => {
+                        this.renderMath();
+                    });
+                    lucide.createIcons();
+                },
+
+                setTab(n) {
+                    this.tab = n;
+                },
+
+                checkMq1() {
+                    let clean = this.mq1.input.replace(/[k=\s]/gi, '');
+                    if (clean === '10') {
+                        this.mq1.solved = true;
+                        this.mq1.feedback = "Correct! You successfully applied the c/a rule.";
+                        this.mq1.showSol = true;
+                    } else {
+                        this.mq1.attempts++;
+                        let attemptsLeft = 3 - this.mq1.attempts;
+                        if (this.mq1.attempts >= 3) {
+                            this.mq1.feedback = "Out of attempts! Let's take a look at the solution together.";
+                            this.mq1.showSol = true;
+                        } else {
+                            this.mq1.feedback = "Not quite. Check your 'a' coefficient carefully. (" + attemptsLeft + " attempts remaining)";
+                        }
+                    }
+                    this.renderMath();
+                },
+
+                checkExam() {
+                    let q = this.exam.questions[this.exam.idx];
+                    let isCorrect = false;
+
+                    if (q.twoInputs) {
+                        let aAns = this.exam.input.replace(/[a-zA-Z=\s]/gi, '');
+                        let bAns = this.exam.input2.replace(/[a-zA-Z=\s]/gi, '');
+                        if (aAns === q.ansA && bAns === q.ansB) isCorrect = true;
+                    } else {
+                        let cleanAns = this.exam.input.replace(/[A-Za-z=\s]/gi, '');
+                        if (cleanAns === q.ans) isCorrect = true;
+                    }
+
+                    if (isCorrect) {
+                        this.exam.solved = true;
+                        this.exam.feedback = "Spot on! Brilliant mathematical logic.";
+                        this.exam.showSol = true;
+                        if (this.exam.attempts === 0) this.exam.score++;
+                    } else {
+                        this.exam.attempts++;
+                        let attemptsLeft = 3 - this.exam.attempts;
+                        
+                        if (this.exam.attempts >= 3) {
+                            this.exam.solved = false;
+                            this.exam.feedback = "You've run out of attempts. Let's study the full working below.";
+                            this.exam.showSol = true;
+                        } else {
+                            this.exam.solved = false;
+                            this.exam.feedback = "Hint: " + q.hints[this.exam.attempts - 1] + " (" + attemptsLeft + " attempts remaining)";
+                        }
+                    }
+                    this.renderMath();
+                },
+
+                nextExam() {
+                    if (this.exam.idx < this.exam.questions.length - 1) {
+                        this.exam.idx++;
+                        this.exam.input = '';
+                        this.exam.input2 = '';
+                        this.exam.attempts = 0;
+                        this.exam.solved = false;
+                        this.exam.showSol = false;
+                        this.exam.feedback = '';
+                    } else {
+                        this.exam.finished = true;
+                    }
+                    this.renderMath();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                resetExam() {
+                    this.exam.idx = 0;
+                    this.exam.input = '';
+                    this.exam.input2 = '';
+                    this.exam.attempts = 0;
+                    this.exam.solved = false;
+                    this.exam.showSol = false;
+                    this.exam.feedback = '';
+                    this.exam.score = 0;
+                    this.exam.finished = false;
+                    this.renderMath();
+                },
+
+                renderMath() {
+                    this.$nextTick(() => {
+                        renderMathInElement(document.body, {
+                            delimiters: [
+                                {left: '$$', right: '$$', display: true},
+                                {left: '$', right: '$', display: false}
+                            ],
+                            throwOnError: false
+                        });
+                        lucide.createIcons();
+                    });
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
