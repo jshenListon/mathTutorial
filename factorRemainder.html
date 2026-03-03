@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCEA L3 Calculus | Factor & Remainder Theorem</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        [x-cloak] { display: none !important; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .attempt-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .math-block {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .btn-primary {
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2), 0 2px 4px -1px rgba(79, 70, 229, 0.1);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+
+        .tab-btn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #4f46e5;
+            font-weight: 800;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #4f46e5;
+            border-radius: 3px 3px 0 0;
+        }
+    </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-900 min-h-screen flex flex-col" x-data="calculusApp()">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 shadow-sm">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg rotate-3">
+                    $P(x)$
+                </div>
+                <div>
+                    <h1 class="font-black text-2xl text-slate-800 leading-tight tracking-tight">Calculus L3</h1>
+                    <p class="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em]">Complex & Real Algebra</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">Assessment Unit</span>
+                    <span class="text-xs font-bold text-slate-700">AS91577 (3.5)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-8 flex-grow w-full">
+        
+        <nav class="flex space-x-6 border-b border-slate-200 mb-8 px-2 overflow-x-auto">
+            <button @click="setTab(0)" class="tab-btn pb-4 text-sm uppercase tracking-wider font-semibold text-slate-500 whitespace-nowrap hover:text-indigo-500" :class="tab === 0 ? 'active' : ''">
+                0. The Real World
+            </button>
+            <button @click="setTab(1)" class="tab-btn pb-4 text-sm uppercase tracking-wider font-semibold text-slate-500 whitespace-nowrap hover:text-indigo-500" :class="tab === 1 ? 'active' : ''">
+                1. Remainder Theorem
+            </button>
+            <button @click="setTab(2)" class="tab-btn pb-4 text-sm uppercase tracking-wider font-semibold text-slate-500 whitespace-nowrap hover:text-indigo-500" :class="tab === 2 ? 'active' : ''">
+                2. Factor Theorem
+            </button>
+            <button @click="setTab(3)" class="tab-btn pb-4 text-sm uppercase tracking-wider font-semibold text-slate-500 whitespace-nowrap hover:text-indigo-500 flex items-center gap-2" :class="tab === 3 ? 'active' : ''">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i> Exam Mastery
+            </button>
+        </nav>
+
+        <div x-show="tab === 0" x-transition.opacity.duration.500ms>
+            <div class="glass-card p-8 md:p-10 rounded-[2rem] shadow-xl shadow-slate-200/60 mb-8 border-t-8 border-t-blue-500">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">The Magic of Polynomials</h2>
+                <h3 class="text-xl font-bold text-blue-600 mb-6">Why are we dividing polynomials?</h3>
+                
+                <p class="text-slate-600 text-lg leading-relaxed mb-6">
+                    Finding the remainder of a polynomial division sounds incredibly dry until you realize it is the mathematical engine behind some of the most important technologies in the modern world.
+                </p>
+
+                <div class="my-8 flex justify-center">
+                    
+                </div>
+                
+                <div class="bg-blue-50 border border-blue-100 p-6 rounded-2xl mb-8">
+                    <h4 class="font-bold text-blue-900 text-lg mb-3 flex items-center gap-2">
+                        <i data-lucide="qr-code" class="w-5 h-5"></i> QR Codes & Scratched CDs
+                    </h4>
+                    <p class="text-slate-700 leading-relaxed mb-4">
+                        In computer science, any stream of digital data (like a website URL in a QR code) is just a string of 1s and 0s. Computers treat this string of binary data as one giant polynomial! (e.g., $1011$ becomes $1x^3 + 0x^2 + 1x + 1$).
+                    </p>
+                    <p class="text-slate-700 leading-relaxed">
+                        To ensure a QR code still works even if it gets ripped or dirty, the generator takes your "Data Polynomial" and divides it by a special "Key Polynomial". It takes the <strong>remainder</strong> of that division and physically prints it into the corner of the QR code as a backup. 
+                    </p>
+                </div>
+
+                <div class="bg-slate-900 text-white p-6 rounded-2xl">
+                    <p class="font-medium text-slate-300 leading-relaxed">
+                        When your phone scans the code, it performs the exact same polynomial division. If the remainder your phone calculates matches the remainder printed on the code, the data is safe. If the remainder is different, the math tells your phone <em>exactly</em> which pixel was damaged so it can fix it instantly! <strong>Today, we learn the math of the ultimate error-checker.</strong>
+                    </p>
+                </div>
+                
+                <div class="mt-8 text-right">
+                    <button @click="setTab(1)" class="btn-primary bg-blue-600 text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">Discover the Theorem <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="tab === 1" x-cloak x-transition.opacity.duration.500ms>
+            <div class="glass-card p-8 md:p-10 rounded-[2rem] shadow-xl shadow-slate-200/60 mb-8 border-t-8 border-t-indigo-500">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">The Remainder Theorem</h2>
+                
+                <p class="text-slate-600 text-lg leading-relaxed mb-6">
+                    <strong>Why is this a big deal?</strong> Polynomial long division is tedious, prone to algebraic mistakes, and takes several lines of working. The Remainder Theorem gives us a mathematical shortcut to find the remainder instantly, bypassing the division entirely by turning it into a simple substitution problem!
+                </p>
+                
+                <div class="bg-indigo-50 border border-indigo-100 p-6 rounded-2xl mb-6">
+                    <h3 class="font-bold text-indigo-900 text-lg mb-2 uppercase tracking-widest text-xs">The Rule</h3>
+                    <p class="text-indigo-800">
+                        When a polynomial $P(x)$ is divided by $(x - c)$, the remainder is exactly equal to $P(c)$. <br><br>
+                        <em>Extended:</em> If divided by $(ax - b)$, the remainder is $P(\frac{b}{a})$.
+                    </p>
+                </div>
+
+                <div x-data="{ showProof: false }" class="mb-8">
+                    <button @click="showProof = !showProof" class="flex items-center gap-2 text-indigo-600 font-bold hover:text-indigo-800 transition-colors text-sm uppercase tracking-wide">
+                        <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="showProof ? 'rotate-180' : ''"></i>
+                        Show Mathematical Proof
+                    </button>
+                    <div x-show="showProof" x-collapse x-transition class="mt-4 bg-white border border-slate-200 p-6 rounded-xl shadow-inner">
+                        <p class="text-slate-700 mb-2">Let a polynomial $P(x)$ be divided by $(x-c)$. The general division algorithm states:</p>
+                        <div class="math-block bg-slate-50 p-4 rounded-lg border border-slate-100 mb-2 text-center">
+                            $P(x) = (x-c) \cdot Q(x) + R$
+                        </div>
+                        <p class="text-slate-600 text-sm mb-4">Where $Q(x)$ is the quotient (the answer) and $R$ is the constant remainder.</p>
+                        <p class="text-slate-700 mb-2">If we substitute $x = c$ into the entire equation:</p>
+                        <div class="math-block text-slate-800">
+                            $P(c) = (c-c) \cdot Q(c) + R$<br>
+                            $P(c) = (0) \cdot Q(c) + R$<br>
+                            $P(c) = 0 + R$<br>
+                            <strong>$P(c) = R$</strong>
+                        </div>
+                        <p class="text-slate-500 text-sm mt-3 italic">And just like that, the quotient cancels out entirely, leaving only the remainder!</p>
+                    </div>
+                </div>
+
+                <h3 class="font-bold text-slate-800 text-xl mb-4">Quadratic Demonstration</h3>
+                <p class="text-slate-600 mb-4">Let's look at a quadratic polynomial: $$P(x) = x^2 - 5x + 7$$</p>
+                <p class="text-slate-600 mb-6">If we want to find the remainder when dividing this by $(x - 2)$, we simply substitute $x = 2$ into the polynomial:</p>
+                
+                <div class="bg-slate-900 text-slate-100 p-6 rounded-2xl font-mono text-sm md:text-base mb-10 overflow-x-auto shadow-inner">
+                    $P(2) = (2)^2 - 5(2) + 7$<br>
+                    $P(2) = 4 - 10 + 7$<br>
+                    $P(2) = 1$<br><br>
+                    <span class="text-emerald-400 font-bold">// Therefore, the remainder is 1.</span>
+                </div>
+
+                <div class="border-t-2 border-slate-100 pt-8 mt-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i data-lucide="zap" class="text-amber-500 w-6 h-6"></i>
+                        <h3 class="font-black text-xl text-slate-800">Learning Check 1</h3>
+                    </div>
+                    <p class="text-slate-600 mb-4 font-medium">Find the remainder when $P(x) = 3x^2 + 2x - 4$ is divided by $(x + 1)$.</p>
+                    
+                    <div class="flex items-center gap-4" x-show="!mq1.solved && mq1.attempts < 3">
+                        <input type="text" x-model="mq1.input" @keyup.enter="checkMq1" placeholder="Enter remainder" class="bg-white border-2 border-slate-200 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none font-bold w-48">
+                        <button @click="checkMq1" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-600 transition-colors">Check</button>
+                    </div>
+
+                    <div x-show="mq1.feedback" class="mt-4 p-4 rounded-xl font-medium" :class="mq1.solved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'" x-text="mq1.feedback" x-transition></div>
+
+                    <div x-show="mq1.showSol" class="mt-6 bg-slate-50 p-6 rounded-2xl border border-slate-200" x-transition>
+                        <h4 class="font-bold text-slate-800 mb-2">Step-by-Step Solution:</h4>
+                        <div class="math-block text-slate-600">
+                            Since we are dividing by $(x + 1)$, which is $(x - (-1))$, we evaluate $P(-1)$.<br>
+                            $P(-1) = 3(-1)^2 + 2(-1) - 4$<br>
+                            $P(-1) = 3(1) - 2 - 4$<br>
+                            $P(-1) = 3 - 6 = \mathbf{-3}$
+                        </div>
+                        <button @click="setTab(2)" class="mt-6 btn-primary bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">Continue to Factor Theorem <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="tab === 2" x-cloak x-transition.opacity.duration.500ms>
+            <div class="glass-card p-8 md:p-10 rounded-[2rem] shadow-xl shadow-slate-200/60 mb-8 border-t-8 border-t-emerald-500">
+                <h2 class="text-3xl font-black text-slate-800 mb-4">The Factor Theorem</h2>
+                <p class="text-slate-600 text-lg leading-relaxed mb-6">
+                    The Factor Theorem is a direct consequence of the Remainder Theorem. If a polynomial divides perfectly into another polynomial, there is nothing left over. The remainder is exactly zero.
+                </p>
+                
+                <div class="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl mb-6 flex flex-col md:flex-row gap-6 items-center">
+                    <div class="flex-grow">
+                        <h3 class="font-bold text-emerald-900 text-lg mb-2 uppercase tracking-widest text-xs">The Rule</h3>
+                        <p class="text-emerald-800">
+                            If $P(c) = 0$, then $(x - c)$ is a <strong>factor</strong> of the polynomial $P(x)$.<br><br>
+                            Conversely, if $(x - c)$ is a factor, we absolutely know that $P(c) = 0$. This gives us an equation to solve for unknown variables!
+                        </p>
+                    </div>
+                </div>
+
+                <div x-data="{ showProof: false }" class="mb-8">
+                    <button @click="showProof = !showProof" class="flex items-center gap-2 text-emerald-700 font-bold hover:text-emerald-900 transition-colors text-sm uppercase tracking-wide">
+                        <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="showProof ? 'rotate-180' : ''"></i>
+                        Show Algebraic Proof
+                    </button>
+                    <div x-show="showProof" x-collapse x-transition class="mt-4 bg-white border border-slate-200 p-6 rounded-xl shadow-inner">
+                        <p class="text-slate-700 mb-2">From the Remainder Theorem, we established the division formula:</p>
+                        <div class="math-block bg-slate-50 p-4 rounded-lg border border-slate-100 mb-2 text-center">
+                            $P(x) = (x-c) \cdot Q(x) + P(c)$
+                        </div>
+                        <p class="text-slate-700 mb-2">If we are told that $P(c) = 0$, we substitute $0$ into the equation:</p>
+                        <div class="math-block text-slate-800">
+                            $P(x) = (x-c) \cdot Q(x) + 0$<br>
+                            <strong>$P(x) = (x-c) \cdot Q(x)$</strong>
+                        </div>
+                        <p class="text-slate-500 text-sm mt-3 italic">Because $(x-c)$ perfectly multiplies with $Q(x)$ to produce $P(x)$ without any remainder, $(x-c)$ must be a mathematical factor of $P(x)$.</p>
+                    </div>
+                </div>
+
+                <div class="my-8 flex justify-center">
+                    
+                </div>
+
+                <h3 class="font-bold text-slate-800 text-xl mb-4">Cubic Demonstration</h3>
+                <p class="text-slate-600 mb-4">Let's analyze the cubic polynomial: $$P(x) = x^3 - 4x^2 + x + 6$$</p>
+                <p class="text-slate-600 mb-6">Is $(x - 2)$ a factor? Let's check the remainder $P(2)$:</p>
+                
+                <div class="bg-slate-900 text-slate-100 p-6 rounded-2xl font-mono text-sm md:text-base mb-10 overflow-x-auto shadow-inner">
+                    $P(2) = (2)^3 - 4(2)^2 + (2) + 6$<br>
+                    $P(2) = 8 - 4(4) + 2 + 6$<br>
+                    $P(2) = 8 - 16 + 8$<br>
+                    $P(2) = 0$<br><br>
+                    <span class="text-emerald-400 font-bold">// Since P(2) = 0, (x - 2) IS a perfect factor!</span>
+                </div>
+
+                <div class="border-t-2 border-slate-100 pt-8 mt-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i data-lucide="zap" class="text-amber-500 w-6 h-6"></i>
+                        <h3 class="font-black text-xl text-slate-800">Learning Check 2</h3>
+                    </div>
+                    <p class="text-slate-600 mb-4 font-medium">Given that $(x - 3)$ is a factor of $P(x) = x^3 - 2x^2 - 5x + k$. Find the value of $k$.</p>
+                    
+                    <div class="flex items-center gap-4" x-show="!mq2.solved && mq2.attempts < 3">
+                        <input type="text" x-model="mq2.input" @keyup.enter="checkMq2" placeholder="k = ?" class="bg-white border-2 border-slate-200 rounded-xl px-4 py-3 focus:border-emerald-500 outline-none font-bold w-48">
+                        <button @click="checkMq2" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-600 transition-colors">Check</button>
+                    </div>
+
+                    <div x-show="mq2.feedback" class="mt-4 p-4 rounded-xl font-medium" :class="mq2.solved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'" x-text="mq2.feedback" x-transition></div>
+
+                    <div x-show="mq2.showSol" class="mt-6 bg-slate-50 p-6 rounded-2xl border border-slate-200" x-transition>
+                        <h4 class="font-bold text-slate-800 mb-2">Step-by-Step Solution:</h4>
+                        <div class="math-block text-slate-600">
+                            Because $(x - 3)$ is a factor, the Factor Theorem states $P(3) = 0$.<br>
+                            $P(3) = (3)^3 - 2(3)^2 - 5(3) + k = 0$<br>
+                            $27 - 18 - 15 + k = 0$<br>
+                            $9 - 15 + k = 0$<br>
+                            $-6 + k = 0 \Rightarrow \mathbf{k = 6}$
+                        </div>
+                        <button @click="setTab(3)" class="mt-6 btn-primary bg-slate-900 text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">Start Exam Mastery <i data-lucide="sword" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="tab === 3" x-cloak x-transition.opacity.duration.500ms>
+            
+            <template x-if="!exam.finished">
+                <div class="glass-card rounded-[2rem] shadow-2xl shadow-slate-200 border border-slate-200 overflow-hidden border-t-8 border-t-slate-800">
+                    <div class="bg-slate-50 px-8 py-5 flex justify-between items-center border-b border-slate-200">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">NCEA Exam Mastery</span>
+                            <span class="text-lg font-bold text-slate-800" x-text="'Question ' + (exam.idx + 1) + ' of ' + exam.questions.length"></span>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Attempts</span>
+                            <div class="flex space-x-2">
+                                <template x-for="i in 3">
+                                    <div class="attempt-dot" :class="exam.attempts >= i ? 'bg-rose-500' : 'bg-slate-300'"></div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-8 md:p-10">
+                        <div class="mb-8">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full text-[10px] font-bold text-slate-500 uppercase mb-4">
+                                <i data-lucide="book-open" class="w-3 h-3"></i> Past Exam Question
+                            </div>
+                            <p class="text-2xl text-slate-800 leading-[1.6] font-semibold" x-html="exam.questions[exam.idx].q"></p>
+                        </div>
+
+                        <div class="space-y-4" x-show="!exam.showSol">
+                            
+                            <template x-if="!exam.questions[exam.idx].twoInputs">
+                                <div class="relative">
+                                    <input type="text" x-model="exam.input" @keyup.enter="checkExam"
+                                        placeholder="Final value..."
+                                        class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-6 py-5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 outline-none transition-all text-xl font-bold placeholder:text-slate-300 placeholder:font-normal">
+                                    <button @click="checkExam" class="absolute right-3 top-3 bottom-3 px-8 bg-slate-900 text-white rounded-xl font-bold hover:bg-indigo-600 transition-colors">
+                                        Check
+                                    </button>
+                                </div>
+                            </template>
+
+                            <template x-if="exam.questions[exam.idx].twoInputs">
+                                <div class="flex flex-col md:flex-row gap-4">
+                                    <input type="text" x-model="exam.input" placeholder="a =" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-6 py-5 focus:border-indigo-500 outline-none transition-all text-xl font-bold">
+                                    <input type="text" x-model="exam.input2" placeholder="b =" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-6 py-5 focus:border-indigo-500 outline-none transition-all text-xl font-bold">
+                                    <button @click="checkExam" class="px-8 py-5 bg-slate-900 text-white rounded-2xl font-bold hover:bg-indigo-600 transition-colors">Check</button>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div x-show="exam.feedback" x-transition class="mt-6 p-6 rounded-2xl border-2" 
+                             :class="exam.solved ? 'bg-emerald-50 border-emerald-100 text-emerald-800' : 'bg-amber-50 border-amber-100 text-amber-800'">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                                    <span class="text-xl" x-text="exam.solved ? '✨' : '🧐'"></span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-lg" x-text="exam.solved ? 'Correct!' : 'Hints'"></p>
+                                    <p class="mt-1 opacity-90 leading-relaxed" x-html="exam.feedback"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div x-show="exam.showSol" x-transition.duration.500ms class="mt-10 border-t border-slate-100 pt-10">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">?</span>
+                                <h3 class="text-lg font-extrabold text-slate-800 uppercase tracking-tight">Full Step-by-Step Working</h3>
+                            </div>
+                            <div class="bg-indigo-50/30 p-8 rounded-3xl text-slate-700 space-y-4 leading-relaxed border border-indigo-100/50 math-block" x-html="exam.questions[exam.idx].sol">
+                            </div>
+                            
+                            <button @click="nextExam" class="btn-primary mt-8 w-full bg-slate-900 text-white py-5 rounded-2xl font-bold hover:bg-indigo-600 transition-all flex items-center justify-center space-x-2">
+                                <span x-text="exam.idx === exam.questions.length - 1 ? 'View Final Results' : 'Next Question'"></span>
+                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template x-if="exam.finished">
+                <div class="text-center py-16 glass-card rounded-[2rem] border-t-8 border-t-indigo-600 animate-in zoom-in duration-500">
+                    <div class="w-24 h-24 bg-indigo-600 text-white rounded-[2rem] flex items-center justify-center mx-auto mb-8 text-4xl shadow-2xl rotate-12"><i data-lucide="award" class="w-12 h-12"></i></div>
+                    <h2 class="text-4xl font-black text-slate-800 mb-4 tracking-tighter">Module Complete!</h2>
+                    <p class="text-slate-500 text-lg mb-10 max-w-md mx-auto">
+                        You have successfully completed the Advanced Polynomial Algebra module.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-12">
+                        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200">
+                            <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Final Score</div>
+                            <div class="text-3xl font-black text-indigo-600" x-text="exam.score + '/' + exam.questions.length"></div>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200">
+                            <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Accuracy</div>
+                            <div class="text-3xl font-black text-indigo-600" x-text="Math.round((exam.score/exam.questions.length)*100) + '%'"></div>
+                        </div>
+                    </div>
+
+                    <button @click="resetExam" class="inline-flex items-center gap-2 text-indigo-600 font-bold hover:text-indigo-800 transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        <span>Restart Exam</span>
+                    </button>
+                </div>
+            </template>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t-4 border-indigo-500 py-10 mt-auto w-full">
+        <div class="text-center">
+            <p class="text-sm font-mono font-bold text-slate-100 tracking-widest uppercase">Designed by Mr. Shen</p>
+            <p class="text-xs text-slate-500 mt-2 font-mono">© 2026 SHN Agency. L3 Calculus Module.</p>
+        </div>
+    </footer>
+
+    <script>
+        function calculusApp() {
+            return {
+                tab: 0, // Starts on the QR Code Intro Tab
+                
+                // Mini Quiz 1 State
+                mq1: {
+                    input: '',
+                    attempts: 0,
+                    solved: false,
+                    showSol: false,
+                    feedback: ''
+                },
+
+                // Mini Quiz 2 State
+                mq2: {
+                    input: '',
+                    attempts: 0,
+                    solved: false,
+                    showSol: false,
+                    feedback: ''
+                },
+
+                // Exam State
+                exam: {
+                    idx: 0,
+                    input: '',
+                    input2: '',
+                    attempts: 0,
+                    solved: false,
+                    showSol: false,
+                    feedback: '',
+                    score: 0,
+                    finished: false,
+                    questions: [
+                        {
+                            q: "Dividing $2x^3 + 5x^2 + Ax + 7$ by $(x + 3)$ gives a remainder of 16. What is the value of A?",
+                            ans: "-6",
+                            twoInputs: false,
+                            hints: [
+                                "Use the Remainder Theorem: $P(-3) = 16$.",
+                                "Substitute $x = -3$ into the equation: $2(-3)^3 + 5(-3)^2 + A(-3) + 7 = 16$."
+                            ],
+                            sol: `
+                                <p><strong>Step 1:</strong> By the Remainder Theorem, $P(-3) = 16$.</p>
+                                <p><strong>Step 2:</strong> Substitute $x = -3$:<br>
+                                $2(-3)^3 + 5(-3)^2 + A(-3) + 7 = 16$<br>
+                                $2(-27) + 5(9) - 3A + 7 = 16$<br>
+                                $-54 + 45 - 3A + 7 = 16$</p>
+                                <p><strong>Step 3:</strong> Simplify and solve for A:<br>
+                                $-9 - 3A + 7 = 16$<br>
+                                $-2 - 3A = 16$<br>
+                                $-3A = 18$<br>
+                                $A = -6$</p>
+                            `
+                        },
+                        {
+                            q: "When the polynomial $2x^3 - x^2 - 4x + p$ is divided by $(x - 3)$, the remainder is 38. Find the value of p.",
+                            ans: "5",
+                            twoInputs: false,
+                            hints: [
+                                "Apply the Remainder Theorem: $P(3) = 38$.",
+                                "Substitute $x = 3$ into the equation and set it equal to 38."
+                            ],
+                            sol: `
+                                <p><strong>Step 1:</strong> By the Remainder Theorem, $P(3) = 38$.</p>
+                                <p><strong>Step 2:</strong> Substitute $x = 3$:<br>
+                                $2(3)^3 - (3)^2 - 4(3) + p = 38$<br>
+                                $2(27) - 9 - 12 + p = 38$<br>
+                                $54 - 21 + p = 38$</p>
+                                <p><strong>Step 3:</strong> Solve for p:<br>
+                                $33 + p = 38$<br>
+                                $p = 5$</p>
+                            `
+                        },
+                        {
+                            q: "Given that $(x - 2)$ is a factor of $2x^3 + qx^2 - 17x - 10$, find the value of q.",
+                            ans: "7",
+                            twoInputs: false,
+                            hints: [
+                                "Because it is a factor, the remainder is 0. So, $P(2) = 0$.",
+                                "Substitute $x = 2$ and set the equation to 0: $2(2)^3 + q(2)^2 - 17(2) - 10 = 0$."
+                            ],
+                            sol: `
+                                <p><strong>Step 1:</strong> By the Factor Theorem, $P(2) = 0$.</p>
+                                <p><strong>Step 2:</strong> Substitute $x = 2$:<br>
+                                $2(2)^3 + q(2)^2 - 17(2) - 10 = 0$<br>
+                                $2(8) + q(4) - 34 - 10 = 0$<br>
+                                $16 + 4q - 44 = 0$</p>
+                                <p><strong>Step 3:</strong> Solve for q:<br>
+                                $4q - 28 = 0$<br>
+                                $4q = 28$<br>
+                                $q = 7$</p>
+                            `
+                        },
+                        {
+                            q: "The polynomial $f(x) = x^3 + 3x^2 + ax + b$ has the same remainder when divided by $(x - 2)$ as it does when divided by $(x + 1)$. The polynomial $f(x)$ also has $(x + 2)$ as a factor. Find the values of a and b.",
+                            ans: "-6", 
+                            twoInputs: true,
+                            hints: [
+                                "You need to set up simultaneous equations. First, $f(2) = f(-1)$.",
+                                "Second, since $(x+2)$ is a factor, $f(-2) = 0$."
+                            ],
+                            sol: `
+                                <p><strong>Part 1: Same Remainder Condition</strong><br>
+                                $f(2) = f(-1)$<br>
+                                $(2)^3 + 3(2)^2 + a(2) + b = (-1)^3 + 3(-1)^2 + a(-1) + b$<br>
+                                $8 + 12 + 2a + b = -1 + 3 - a + b$<br>
+                                $20 + 2a + b = 2 - a + b$<br>
+                                Cancel 'b' from both sides:<br>
+                                $20 + 2a = 2 - a$<br>
+                                $3a = -18 \\Rightarrow \\mathbf{a = -6}$</p>
+
+                                <p><strong>Part 2: Factor Condition</strong><br>
+                                Since $(x+2)$ is a factor, $f(-2) = 0$.<br>
+                                $(-2)^3 + 3(-2)^2 + a(-2) + b = 0$<br>
+                                $-8 + 12 - 2a + b = 0$<br>
+                                $4 - 2a + b = 0$<br>
+                                Substitute $a = -6$ into this equation:<br>
+                                $4 - 2(-6) + b = 0$<br>
+                                $4 + 12 + b = 0$<br>
+                                $16 + b = 0 \\Rightarrow \\mathbf{b = -16}$</p>
+                            `
+                        },
+                        {
+                            q: "Dividing $x^3 - 3x^2 + bx + 9$ by $(x + 2)$ gives a remainder of 3. Find the value of b.",
+                            ans: "-7",
+                            twoInputs: false,
+                            hints: [
+                                "Apply the Remainder Theorem: $P(-2) = 3$.",
+                                "Substitute $x = -2$: $(-2)^3 - 3(-2)^2 + b(-2) + 9 = 3$."
+                            ],
+                            sol: `
+                                <p><strong>Step 1:</strong> By the Remainder Theorem, $P(-2) = 3$.</p>
+                                <p><strong>Step 2:</strong> Substitute $x = -2$:<br>
+                                $(-2)^3 - 3(-2)^2 + b(-2) + 9 = 3$<br>
+                                $-8 - 3(4) - 2b + 9 = 3$<br>
+                                $-8 - 12 - 2b + 9 = 3$</p>
+                                <p><strong>Step 3:</strong> Solve for b:<br>
+                                $-20 - 2b + 9 = 3$<br>
+                                $-11 - 2b = 3$<br>
+                                $-2b = 14$<br>
+                                $b = -7$</p>
+                            `
+                        }
+                    ]
+                },
+
+                init() {
+                    this.$watch('tab', () => {
+                        this.renderMath();
+                    });
+                    lucide.createIcons();
+                },
+
+                setTab(n) {
+                    this.tab = n;
+                },
+
+                checkMq1() {
+                    let clean = this.mq1.input.replace(/\s/g, '');
+                    if (clean === '-3') {
+                        this.mq1.solved = true;
+                        this.mq1.feedback = "Correct! Great job evaluating P(-1).";
+                        this.mq1.showSol = true;
+                    } else {
+                        this.mq1.attempts++;
+                        let attemptsLeft = 3 - this.mq1.attempts;
+                        if (this.mq1.attempts >= 3) {
+                            this.mq1.feedback = "Out of attempts! Let's take a look at the solution together.";
+                            this.mq1.showSol = true;
+                        } else {
+                            this.mq1.feedback = "Not quite. Remember to calculate 3(-1)² + 2(-1) - 4. (" + attemptsLeft + " attempts remaining)";
+                        }
+                    }
+                    this.renderMath();
+                },
+
+                checkMq2() {
+                    let clean = this.mq2.input.replace(/[k=\s]/gi, '');
+                    if (clean === '6') {
+                        this.mq2.solved = true;
+                        this.mq2.feedback = "Excellent! You applied the Factor Theorem perfectly.";
+                        this.mq2.showSol = true;
+                    } else {
+                        this.mq2.attempts++;
+                        let attemptsLeft = 3 - this.mq2.attempts;
+                        if (this.mq2.attempts >= 3) {
+                            this.mq2.feedback = "Out of attempts! Let's review the algebra in the solution below.";
+                            this.mq2.showSol = true;
+                        } else {
+                            this.mq2.feedback = "Not quite. Set P(3) = 0 and solve carefully. (" + attemptsLeft + " attempts remaining)";
+                        }
+                    }
+                    this.renderMath();
+                },
+
+                checkExam() {
+                    let q = this.exam.questions[this.exam.idx];
+                    let isCorrect = false;
+
+                    if (q.twoInputs) {
+                        let aAns = this.exam.input.replace(/[a=\s]/gi, '');
+                        let bAns = this.exam.input2.replace(/[b=\s]/gi, '');
+                        if (aAns === '-6' && bAns === '-16') isCorrect = true;
+                    } else {
+                        let cleanAns = this.exam.input.replace(/[A-Za-z=\s]/gi, '');
+                        if (cleanAns === q.ans) isCorrect = true;
+                    }
+
+                    if (isCorrect) {
+                        this.exam.solved = true;
+                        this.exam.feedback = "Spot on! Brilliant mathematical logic.";
+                        this.exam.showSol = true;
+                        if (this.exam.attempts === 0) this.exam.score++;
+                    } else {
+                        this.exam.attempts++;
+                        let attemptsLeft = 3 - this.exam.attempts;
+                        
+                        if (this.exam.attempts >= 3) {
+                            this.exam.solved = false;
+                            this.exam.feedback = "You've run out of attempts. Let's study the full working below.";
+                            this.exam.showSol = true;
+                        } else {
+                            this.exam.solved = false;
+                            this.exam.feedback = "Hint: " + q.hints[this.exam.attempts - 1] + " (" + attemptsLeft + " attempts remaining)";
+                        }
+                    }
+                    this.renderMath();
+                },
+
+                nextExam() {
+                    if (this.exam.idx < this.exam.questions.length - 1) {
+                        this.exam.idx++;
+                        this.exam.input = '';
+                        this.exam.input2 = '';
+                        this.exam.attempts = 0;
+                        this.exam.solved = false;
+                        this.exam.showSol = false;
+                        this.exam.feedback = '';
+                    } else {
+                        this.exam.finished = true;
+                    }
+                    this.renderMath();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                resetExam() {
+                    this.exam.idx = 0;
+                    this.exam.input = '';
+                    this.exam.input2 = '';
+                    this.exam.attempts = 0;
+                    this.exam.solved = false;
+                    this.exam.showSol = false;
+                    this.exam.feedback = '';
+                    this.exam.score = 0;
+                    this.exam.finished = false;
+                    this.renderMath();
+                },
+
+                renderMath() {
+                    this.$nextTick(() => {
+                        renderMathInElement(document.body, {
+                            delimiters: [
+                                {left: '$$', right: '$$', display: true},
+                                {left: '$', right: '$', display: false}
+                            ],
+                            throwOnError: false
+                        });
+                        lucide.createIcons();
+                    });
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
