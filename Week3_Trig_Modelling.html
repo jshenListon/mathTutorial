@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 4: Trig Modelling Master Class</title>
+    
+    <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+    
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary: #2980b9;
+            --accent: #f39c12;
+            --bg: #fdf2e9;
+            --text: #2c3e50;
+            --card-bg: #ffffff;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; background: var(--card-bg); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+        
+        /* Header */
+        header { background: var(--primary); color: white; padding: 30px; border-bottom: 5px solid #1a5276; }
+        h1 { margin: 0; font-weight: 300; letter-spacing: 1px; }
+        .subtitle { opacity: 0.9; font-style: italic; margin-top: 5px; }
+
+        /* Navigation */
+        .nav-bar { display: flex; background: #ecf0f1; border-bottom: 1px solid #bdc3c7; flex-wrap: wrap; }
+        .nav-btn { flex: 1; padding: 20px 10px; border: none; background: transparent; cursor: pointer; font-weight: 700; color: #7f8c8d; transition: 0.3s; font-size: 1.1rem; }
+        .nav-btn:hover { background: #dfe6e9; color: var(--primary); }
+        .nav-btn.active { background: white; border-top: 5px solid var(--primary); color: var(--primary); }
+        
+        /* Content Sections */
+        .section { display: none; padding: 40px; animation: fadeIn 0.5s ease; }
+        .section.active { display: block; }
+
+        /* Visual Cards */
+        .visual-card { 
+            background: #fff; border-left: 5px solid var(--primary); padding: 20px; margin-bottom: 20px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-radius: 4px;
+        }
+        .intro-box { background: #eaf2f8; border-left: 5px solid #2980b9; padding: 20px; margin-bottom: 20px; font-size: 1.1rem; }
+
+        /* Desmos Wrapper */
+        .desmos-wrapper { width: 100%; height: 500px; border: 1px solid #ccc; border-radius: 4px; margin-top:15px; }
+
+        /* Input Controls */
+        .input-group { margin-bottom: 15px; }
+        .input-group label { font-weight: bold; display: block; margin-bottom: 5px; }
+        .math-input { padding: 8px; border: 2px solid #ccc; border-radius: 4px; font-family: monospace; font-size: 1rem; width: 180px; }
+        .action-btn { padding:10px 20px; background:var(--primary); color:white; border:none; border-radius:4px; cursor:pointer; font-size: 1rem; font-weight: bold; margin-top: 10px; }
+        .action-btn:hover { background: #1a5276; }
+        
+        /* Unit Selection */
+        .unit-select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 1rem; background: white; }
+
+        /* Feedback */
+        .feedback { margin-top: 10px; font-weight: bold; min-height: 20px; padding: 10px; border-radius: 4px; }
+        .feedback.correct { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .feedback.wrong { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Modelling with Trigonometry</h1>
+        <div class="subtitle">NCEA Level 3: Modelling Tides (Parameters A, B, C, D)</div>
+    </header>
+
+    <div class="nav-bar">
+        <button class="nav-btn active" onclick="switchTab('tab0')">0. The Scenario</button>
+        <button class="nav-btn" onclick="switchTab('tab1')">1. Build the Model</button>
+        <button class="nav-btn" onclick="switchTab('tab2')">2. Solve the Problem</button>
+        <button class="nav-btn" onclick="switchTab('tab3')">3. Excellence Task</button>
+    </div>
+
+    <div id="tab0" class="section active">
+        <div class="intro-box">
+            <h3>🌊 Scenario: Port Nelson Tides</h3>
+            <p><strong>The Context:</strong></p>
+            <p>A large cargo ship, the <em>Maersk Nelson</em>, needs to enter the harbour. The depth of the water in the channel changes with the tide.</p>
+            
+            <p><strong>The Data:</strong></p>
+            <ul>
+                <li><strong>Low Tide:</strong> The water is <strong>1.8 meters</strong> deep at <strong>9:45 AM</strong>.</li>
+                <li><strong>High Tide:</strong> The water is <strong>4.2 meters</strong> deep at <strong>3:30 AM</strong> (and again at 4:00 PM).</li>
+                <li>The tidal cycle (Period) is approximately <strong>12.5 hours</strong>.</li>
+            </ul>
+
+            <p><strong>The Task:</strong></p>
+            <ol>
+                <li>Model the depth of the water $d(t)$ using a trigonometric function.</li>
+                <li>The ship requires a minimum depth of <strong>2.5 meters</strong> to sail safely.</li>
+                <li>Find the time intervals during the day when the ship can enter the harbour.</li>
+            </ol>
+        </div>
+    </div>
+
+    <div id="tab1" class="section">
+        <div class="visual-card">
+            <h3>Step 1: Define Your Units</h3>
+            <p>Before modelling, we must define the variables. This changes the value of $B$!</p>
+            <div class="input-group">
+                <label>1. Let $y$ represent:</label>
+                <select id="unit-y" class="unit-select">
+                    <option value="wrong">Time of day</option>
+                    <option value="correct">Depth in meters</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>2. Let $x$ (or $t$) represent:</label>
+                <select id="unit-x" class="unit-select">
+                    <option value="wrong">Time in minutes</option>
+                    <option value="correct">Hours after midnight</option>
+                </select>
+            </div>
+            <div id="fb-units" class="feedback"></div>
+        </div>
+
+        <div class="visual-card">
+            <h3>Step 2: Calculate Parameters</h3>
+            <p>We use the form: $y = A \cos(B(x-C)) + D$</p>
+            
+            <div class="input-group">
+                <label><strong>Amplitude (A):</strong> Use $A = \frac{Max - Min}{2}$</label>
+                <input type="number" id="calc-A" class="math-input" placeholder="A (2 d.p.)" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label><strong>Vertical Shift (D):</strong> Use $D = \frac{Max + Min}{2}$ (Average depth)</label>
+                <input type="number" id="calc-D" class="math-input" placeholder="D (2 d.p.)" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label><strong>Frequency (B):</strong> Period is 12.5 hours. Use $B = \frac{2\pi}{Period}$</label>
+                <input type="number" id="calc-B" class="math-input" placeholder="B (3 d.p.)" step="0.001">
+            </div>
+
+            <div class="input-group">
+                <label><strong>Horizontal Shift (C):</strong> At what time ($x$) is the first High Tide (Peak)?</label>
+                <p style="font-size:0.9rem; color:#666;">(High Tide is at 3:30 AM. Convert 3:30 into decimal hours)</p>
+                <input type="number" id="calc-C" class="math-input" placeholder="C (2 d.p.)" step="0.01">
+            </div>
+
+            <button class="action-btn" onclick="checkModel()">Check Model</button>
+            <div id="fb-model" class="feedback"></div>
+        </div>
+    </div>
+
+    <div id="tab2" class="section">
+        <div class="visual-card">
+            <h3>Step 3: Visual Verification</h3>
+            <p>Does your model match the data points? </p>
+            <ul>
+                <li>Input your model: $y = 1.2\cos(0.503(x-3.5)) + 3$</li>
+                <li>(Use the values you calculated in Tab 1)</li>
+            </ul>
+            <div id="graph-verify" class="desmos-wrapper"></div>
+        </div>
+        
+        <div class="visual-card">
+            <h3>Step 4: Finding the Safe Window</h3>
+            <p>The ship needs <strong>2.5m</strong> depth.</p>
+            <p>1. In Desmos above, add the line $y=2.5$.</p>
+            <p>2. Find the first time the water drops <em>below</em> 2.5m (Intersection 1).</p>
+            <div class="input-group">
+                <label>First unsafe time (hours):</label>
+                <input type="number" id="solve-t1" class="math-input" placeholder="t = ?" step="0.1">
+                <button class="action-btn" onclick="checkSolve()">Check Time</button>
+            </div>
+            <div id="fb-solve" class="feedback"></div>
+        </div>
+    </div>
+
+    <div id="tab3" class="section">
+        <div class="intro-box" style="border-left-color: #8e44ad;">
+            <h3>🚀 Excellence Task: Duration Calculation</h3>
+            <p>The harbour master wants to know the <strong>total duration</strong> (in hours) during the daylight hours (6:00 AM to 6:00 PM) that the ship can safely enter.</p>
+        </div>
+
+        <div class="visual-card">
+            <h3>Interactive Solver</h3>
+            <p>1. Graph the function $y = 1.2\cos(0.503(x-3.5)) + 3$.</p>
+            <p>2. Graph the constraint $y > 2.5$.</p>
+            <p>3. Restrict domain: $\{6 < x < 18\}$.</p>
+            
+            <div id="graph-excellence" class="desmos-wrapper"></div>
+            
+            <div style="margin-top:20px;">
+                 <label><strong>Question:</strong> Calculate the total hours available between 0600 and 1800.</label>
+                 <input type="number" id="exc-ans" class="math-input" placeholder="Hours" step="0.1">
+                 <button class="action-btn" style="background:#8e44ad;" onclick="checkExcellence()">Check Answer</button>
+                 <div id="fb-exc" class="feedback"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- DESMOS INITIALIZATION ---
+    let calcs = {};
+
+    function initDesmos(id, type) {
+        if(calcs[id]) return;
+        const elt = document.getElementById(id);
+        const calculator = Desmos.GraphingCalculator(elt, { expressions: true, settingsMenu: false, lockViewport: false });
+        calcs[id] = calculator;
+
+        if (type === 'verify') {
+            // Data Points
+            calculator.setExpression({ id: 'High1', latex: '(3.5, 4.2)', color:'#2c3e50', label:'High (03:30)', showLabel:true, pointStyle: Desmos.Styles.POINT });
+            calculator.setExpression({ id: 'Low1', latex: '(9.75, 1.8)', color:'#2c3e50', label:'Low (09:45)', showLabel:true, pointStyle: Desmos.Styles.POINT });
+            calculator.setExpression({ id: 'High2', latex: '(16, 4.2)', color:'#2c3e50', label:'High (16:00)', showLabel:true, pointStyle: Desmos.Styles.POINT });
+            
+            // Bounds
+            calculator.setMathBounds({ left: 0, right: 24, bottom: 0, top: 6 });
+            calculator.setExpression({ id: 'hint', latex: 'y=1.2\\cos(0.503(x-3.5))+3', hidden:true });
+        }
+        else if (type === 'excellence') {
+            // Full setup
+            calculator.setExpression({ id: 'Tide', latex: 'y = 1.2\\cos(0.503(x-3.5)) + 3', color:'#2980b9' });
+            calculator.setExpression({ id: 'Safe', latex: 'y > 2.5 \\{6 < x < 18\\}', color:'#27ae60', fillOpacity:0.3, lineStyle: Desmos.Styles.DASHED });
+            calculator.setMathBounds({ left: 0, right: 24, bottom: 0, top: 6 });
+        }
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        
+        const map = {'tab0':0, 'tab1':1, 'tab2':2, 'tab3':3};
+        document.querySelectorAll('.nav-btn')[map[tabId]].classList.add('active');
+        
+        if(tabId === 'tab2') setTimeout(() => initDesmos('graph-verify', 'verify'), 100);
+        if(tabId === 'tab3') setTimeout(() => initDesmos('graph-excellence', 'excellence'), 100);
+        
+        if(window.MathJax) MathJax.typesetPromise();
+    }
+
+    // --- LOGIC ---
+    function checkModel() {
+        // Unit Check
+        const unitY = document.getElementById('unit-y').value;
+        const unitX = document.getElementById('unit-x').value;
+        
+        if(unitY !== 'correct' || unitX !== 'correct') {
+            document.getElementById('fb-units').innerText = "❌ Please select the correct units first (Depth in m, Hours).";
+            document.getElementById('fb-units').className = "feedback wrong";
+            return;
+        } else {
+            document.getElementById('fb-units').innerText = "✅ Units defined correctly.";
+            document.getElementById('fb-units').className = "feedback correct";
+        }
+
+        // Param Check
+        // Max=4.2, Min=1.8
+        // A = (4.2-1.8)/2 = 1.2
+        // D = (4.2+1.8)/2 = 3.0
+        // Period = 12.5. B = 2pi/12.5 = 0.5026... (approx 0.503)
+        // C = High tide at 3:30 = 3.5 hours.
+        
+        const A = parseFloat(document.getElementById('calc-A').value);
+        const D = parseFloat(document.getElementById('calc-D').value);
+        const B = parseFloat(document.getElementById('calc-B').value);
+        const C = parseFloat(document.getElementById('calc-C').value);
+        
+        let feedback = "";
+        let isCorrect = true;
+
+        if (Math.abs(A - 1.2) < 0.05) feedback += "✅ A is correct (1.2). "; else { feedback += "❌ Check A. "; isCorrect = false; }
+        if (Math.abs(D - 3.0) < 0.05) feedback += "✅ D is correct (3.0). "; else { feedback += "❌ Check D. "; isCorrect = false; }
+        if (Math.abs(B - 0.503) < 0.005) feedback += "✅ B is correct (0.503). "; else { feedback += "❌ Check B (2pi/12.5). "; isCorrect = false; }
+        if (Math.abs(C - 3.5) < 0.1) feedback += "✅ C is correct (3.5). "; else { feedback += "❌ Check C (3:30 AM = 3.5). "; isCorrect = false; }
+        
+        const fbElem = document.getElementById('fb-model');
+        fbElem.innerText = feedback;
+        fbElem.className = isCorrect ? "feedback correct" : "feedback wrong";
+    }
+
+    function checkSolve() {
+        // Solve 1.2cos(0.503(x-3.5)) + 3 = 2.5
+        // 1.2cos(...) = -0.5
+        // cos(...) = -0.4166
+        // 0.503(x-3.5) = 1.999 (approx 2.0)
+        // x-3.5 = 3.97
+        // x = 7.47 (approx 7.5 hours) -> 7:30 AM approx.
+        const t = parseFloat(document.getElementById('solve-t1').value);
+        
+        if (Math.abs(t - 7.5) < 0.2) {
+             document.getElementById('fb-solve').innerText = "✅ Correct! The tide drops too low around 7.5 hours (7:30 AM).";
+             document.getElementById('fb-solve').className = "feedback correct";
+        } else {
+             document.getElementById('fb-solve').innerText = "❌ Look for the first intersection where the blue curve goes below 2.5.";
+             document.getElementById('fb-solve').className = "feedback wrong";
+        }
+    }
+
+    function checkExcellence() {
+        // Intersection 1 (Drop): 7.5
+        // Next intersection (Rise):
+        // cos is symmetric. Peak at 3.5. Drop at 3.5 + 4 = 7.5.
+        // Or calculate: 12.5 period. Next peak 16.0.
+        // Rise time?
+        // Let's rely on graph reading for students.
+        // From 6:00 to 7:50 approx (Safe).
+        // Then unsafe.
+        // Then rises again at approx 12.0?
+        // Let's simplify: They just need to measure the width on Desmos.
+        
+        const ans = parseFloat(document.getElementById('exc-ans').value);
+        // Correct is roughly: 
+        // Safe: 0 to 7.5. 
+        // Unsafe: 7.5 to 12.0 (approx).
+        // Safe: 12.0 to 18.0.
+        // Wait, cycle is 12.5. Low at 9.75.
+        // Safe window 1 (morning): 0 - 7.5h.
+        // Safe window 2 (afternoon): 12.0h - 20.0h.
+        // Daylight 6-18 constraint:
+        // Window 1: 6.0 to 7.5 = 1.5 hrs.
+        // Window 2: 12.0 to 18.0 = 6.0 hrs.
+        // Total = 7.5 hours.
+        
+        if (Math.abs(ans - 7.5) < 0.5) {
+             document.getElementById('fb-exc').innerHTML = "✅ Excellence! Total safe hours approx 7.5 hours.";
+             document.getElementById('fb-exc').className = "feedback correct";
+        } else {
+             document.getElementById('fb-exc').innerHTML = "💡 Hint: Check the interval from 6 to ~7.5, and from ~12 to 18. Add them up.";
+             document.getElementById('fb-exc').className = "feedback wrong";
+        }
+    }
+
+    window.onload = function() { switchTab('tab0'); };
+</script>
+
+</body>
+</html>

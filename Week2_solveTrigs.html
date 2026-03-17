@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 3: Trigonometric Equations</title>
+    
+    <script src="https://www.desmos.com/api/v1.10/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+    
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary: #2980b9; /* Strong Blue */
+            --accent: #e74c3c;  /* Red for intersections */
+            --bg: #f4f6f7;
+            --text: #2c3e50;
+            --card-bg: #ffffff;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; background: var(--card-bg); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+        
+        /* Header */
+        header { background: var(--primary); color: white; padding: 30px; border-bottom: 5px solid #1a5276; }
+        h1 { margin: 0; font-weight: 300; letter-spacing: 1px; }
+        .subtitle { opacity: 0.9; font-style: italic; margin-top: 5px; }
+
+        /* Navigation */
+        .nav-bar { display: flex; background: #ecf0f1; border-bottom: 1px solid #bdc3c7; flex-wrap: wrap; }
+        .nav-btn { flex: 1; padding: 20px 10px; border: none; background: transparent; cursor: pointer; font-weight: 700; color: #7f8c8d; transition: 0.3s; font-size: 1.1rem; }
+        .nav-btn:hover { background: #dfe6e9; color: var(--primary); }
+        .nav-btn.active { background: white; border-top: 5px solid var(--primary); color: var(--primary); }
+        
+        /* Content Sections */
+        .section { display: none; padding: 40px; animation: fadeIn 0.5s ease; }
+        .section.active { display: block; }
+
+        /* Visual Cards */
+        .visual-card { 
+            background: #fff; border-left: 5px solid var(--primary); padding: 20px; margin-bottom: 20px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-radius: 4px;
+        }
+        
+        /* Desmos Wrapper */
+        .desmos-wrapper { width: 100%; height: 500px; border: 1px solid #ccc; border-radius: 4px; margin-top:15px; }
+
+        /* Controls (Tab 1) */
+        .control-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; background: #eee; padding: 15px; border-radius: 8px; }
+        .slider-group label { font-weight: bold; display: block; margin-bottom: 5px; }
+        .slider-group input { width: 100%; }
+
+        /* Solution layout */
+        .calc-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start; }
+        .calc-visual { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 15px; text-align: center; }
+        
+        /* Simulated Calculator Buttons */
+        .calc-btn-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 10px; }
+        .calc-btn { 
+            width: 50px; height: 35px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; 
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 0 #999;
+        }
+        .btn-shift { background: #d35400; color: white; border: 1px solid #ba4a00; }
+        .btn-trig { background: #34495e; color: white; border: 1px solid #2c3e50; }
+        .btn-label { font-size: 0.7rem; color: #d35400; font-weight: bold; margin-bottom: 2px; }
+
+        .step-by-step { background: #f9f9f9; padding: 15px; border-radius: 4px; }
+        .step-by-step p { margin: 8px 0; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+
+        /* Solution Box */
+        .solution-box { background: #eafaf1; border-left: 5px solid #27ae60; padding: 15px; margin-top: 15px; display: none; }
+        .action-btn { padding:10px 20px; background:var(--primary); color:white; border:none; border-radius:4px; cursor:pointer; font-size: 1rem; font-weight: bold;}
+        .action-btn:hover { background: #1a5276; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Solving Trigonometric Equations</h1>
+        <div class="subtitle">NCEA Level 3 Calculus: Graphical & General Solutions</div>
+    </header>
+
+    <div class="nav-bar">
+        <button class="nav-btn active" onclick="switchTab('tab1')">1. The Visual Intersection</button>
+        <button class="nav-btn" onclick="switchTab('tab2')">2. General Solution (Sine)</button>
+        <button class="nav-btn" onclick="switchTab('tab3')">3. General Solution (Cosine)</button>
+    </div>
+
+    <div id="tab1" class="section active">
+        <div class="visual-card">
+            <h3>Visualizing $y = A \sin(B(x-C)) + D = K$</h3>
+            <p><strong>Goal:</strong> Understand that solving an equation is finding where the wave (blue) crosses a horizontal line (red).</p>
+            <p>Use the sliders to see how changing the wave or moving the target line affects the number and location of solutions (grey dots).</p>
+            
+            <div id="graph-visual" class="desmos-wrapper"></div>
+            
+            <div class="control-panel">
+                <div class="slider-group">
+                    <label>Amplitude (A): <span id="val-A">2</span></label>
+                    <input type="range" min="0.5" max="5" step="0.5" value="2" oninput="updateVisual('A', this.value)">
+                </div>
+                <div class="slider-group">
+                    <label>Vertical Shift (D): <span id="val-D">1</span></label>
+                    <input type="range" min="-3" max="3" step="0.5" value="1" oninput="updateVisual('D', this.value)">
+                </div>
+                <div class="slider-group">
+                    <label>Frequency (B): <span id="val-B">1</span></label>
+                    <input type="range" min="0.5" max="3" step="0.5" value="1" oninput="updateVisual('B', this.value)">
+                </div>
+                <div class="slider-group">
+                    <label>Horizontal Shift (C): <span id="val-C">0</span></label>
+                    <input type="range" min="-3" max="3" step="0.5" value="0" oninput="updateVisual('C', this.value)">
+                </div>
+                <div class="slider-group" style="grid-column: span 2; border-top: 1px solid #ccc; padding-top: 10px; margin-top: 5px;">
+                    <label style="color: #c0392b;">Target Line (K): <span id="val-K">2</span></label>
+                    <input type="range" min="-4" max="6" step="0.5" value="2" oninput="updateVisual('K', this.value)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab2" class="section">
+        <div class="visual-card">
+            <h3>The General Solution for Sine</h3>
+            <div class="calc-grid">
+                <div>
+                    <p><strong>Formula:</strong> If $\sin(X) = c$, then $X = n\pi + (-1)^n \alpha$, where $\alpha = \sin^{-1}(c)$.</p>
+                    <p><strong>Example Steps:</strong> Solve $2\sin(x) = 1$</p>
+                    <div class="step-by-step">
+                        <p>1. Isolate the trig function: $\sin(x) = 0.5$</p>
+                        <p>2. Find Principal Value ($\alpha$): $\alpha = \sin^{-1}(0.5) = \frac{\pi}{6}$</p>
+                        <p>3. Apply General Formula: $x = n\pi + (-1)^n(\frac{\pi}{6})$</p>
+                        <p>4. Generate solutions for $n=0, 1, 2...$</p>
+                    </div>
+                </div>
+                <div class="calc-visual">
+                    <p style="margin-bottom:10px; font-weight:bold;">Casio Graphing Calculator</p>
+                    <p style="font-size:0.8rem;">1. Press <strong>SHIFT</strong>.</p>
+                    <p style="font-size:0.8rem;">2. Press <strong>SIN</strong> to get $\sin^{-1}$.</p>
+                    <div style="margin-top:20px;">
+                        <div class="calc-btn-row">
+                            <div class="calc-btn btn-shift">SHIFT</div>
+                        </div>
+                        <div class="calc-btn-row">
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <div class="btn-label">sin⁻¹</div>
+                                <div class="calc-btn btn-trig">SIN</div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <div class="btn-label">cos⁻¹</div>
+                                <div class="calc-btn btn-trig" style="opacity:0.5;">COS</div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <div class="btn-label">tan⁻¹</div>
+                                <div class="calc-btn btn-trig" style="opacity:0.5;">TAN</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="visual-card" style="border-left-color: #27ae60;">
+            <h3>Interactive Scenario: Tidal Depth</h3>
+            <p><strong>Context:</strong> The depth of water $d$ (metres) at a port $t$ hours after midnight is modelled by: $$d(t) = 3\sin(0.5t) + 5$$</p>
+            <p><strong>Your Task:</strong> Find the times when the water depth is exactly <strong>6.5 metres</strong>.</p>
+            <p><strong>Instructions:</strong> In the Desmos window below, type the two equations needed to solve this graphically:</p>
+            <ol>
+                <li>Type the wave equation: <code>y = 3sin(0.5x) + 5</code></li>
+                <li>Type the target line equation: <code>y = ?</code> (You decide this value)</li>
+            </ol>
+            
+            <div id="graph-sine" class="desmos-wrapper" style="height:400px;"></div>
+
+            <div style="margin-top:20px;">
+                <button class="action-btn" onclick="solveSineScenario()">Show Algebraic Solution Steps</button>
+            </div>
+            
+            <div id="sine-solution" class="solution-box"></div>
+        </div>
+    </div>
+
+    <div id="tab3" class="section">
+        <div class="visual-card">
+            <h3>The General Solution for Cosine</h3>
+             <div class="calc-grid">
+                <div>
+                    <p><strong>Formula:</strong> If $\cos(X) = c$, then $X = 2n\pi \pm \alpha$, where $\alpha = \cos^{-1}(c)$.</p>
+                    <p><strong>Example Steps:</strong> Solve $2\cos(x) = \sqrt{3}$</p>
+                    <div class="step-by-step">
+                        <p>1. Isolate the trig function: $\cos(x) = \frac{\sqrt{3}}{2}$</p>
+                        <p>2. Find Principal Value ($\alpha$): $\alpha = \cos^{-1}(\frac{\sqrt{3}}{2}) = \frac{\pi}{6}$</p>
+                        <p>3. Apply General Formula: $x = 2n\pi \pm \frac{\pi}{6}$</p>
+                        <p>4. Generate solutions using both $+$ and $-$ for $n=0, 1, 2...$</p>
+                    </div>
+                </div>
+                <div class="calc-visual">
+                    <p style="margin-bottom:10px; font-weight:bold;">Casio Graphing Calculator</p>
+                    <p style="font-size:0.8rem;">1. Press <strong>SHIFT</strong>.</p>
+                    <p style="font-size:0.8rem;">2. Press <strong>COS</strong> to get $\cos^{-1}$.</p>
+                    <div style="margin-top:20px;">
+                        <div class="calc-btn-row">
+                            <div class="calc-btn btn-shift">SHIFT</div>
+                        </div>
+                        <div class="calc-btn-row">
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <div class="btn-label">sin⁻¹</div>
+                                <div class="calc-btn btn-trig" style="opacity:0.5;">SIN</div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <div class="btn-label">cos⁻¹</div>
+                                <div class="calc-btn btn-trig">COS</div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <div class="btn-label">tan⁻¹</div>
+                                <div class="calc-btn btn-trig" style="opacity:0.5;">TAN</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visual-card" style="border-left-color: #8e44ad;">
+             <h3>Interactive Scenario: Daily Temperature</h3>
+            <p><strong>Context:</strong> The temperature $T$ (°C) in a greenhouse $h$ hours after 8:00 AM is modelled by: $$T(h) = 4\cos(\frac{\pi}{12}h) + 18$$</p>
+            <p><strong>Your Task:</strong> Find the times when the temperature is exactly <strong>20°C</strong>.</p>
+            <p><strong>Instructions:</strong> In the Desmos window below, type the two equations needed to find the intersection:</p>
+            <ol>
+                <li>Type the temperature wave: <code>y = 4cos(pi/12 * x) + 18</code> (Type 'pi' for $\pi$)</li>
+                <li>Type the target temperature line: <code>y = ?</code></li>
+            </ol>
+            
+            <div id="graph-cos" class="desmos-wrapper" style="height:400px;"></div>
+
+             <div style="margin-top:20px;">
+                <button class="action-btn" style="background:#8e44ad;" onclick="solveCosScenario()">Show Algebraic Solution Steps</button>
+            </div>
+            
+            <div id="cos-solution" class="solution-box" style="border-left-color: #8e44ad;"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- DESMOS INITIALIZATION ---
+    let calcs = {};
+
+    function initDesmos(id, type) {
+        if(calcs[id]) return;
+        const elt = document.getElementById(id);
+        
+        // Tab 1: Visual only
+        if (type === 'visual') {
+            const calculator = Desmos.GraphingCalculator(elt, { expressions: false, settingsMenu: false, lockViewport: false });
+            calcs[id] = calculator;
+            calculator.setExpression({ id: 'A', latex: 'A=2' });
+            calculator.setExpression({ id: 'B', latex: 'B=1' });
+            calculator.setExpression({ id: 'C', latex: 'C=0' });
+            calculator.setExpression({ id: 'D', latex: 'D=1' });
+            calculator.setExpression({ id: 'K', latex: 'K=2' });
+            calculator.setExpression({ id: 'wave', latex: 'y = A \\sin(B(x-C)) + D', color: '#2980b9', lineWidth: 3 });
+            calculator.setExpression({ id: 'line', latex: 'y = K', color: '#e74c3c', lineWidth: 2, lineStyle: Desmos.Styles.DASHED });
+            calculator.setMathBounds({ left: -5, right: 15, bottom: -5, top: 8 });
+        }
+        // Tab 2 & 3: Full interactive
+        else if (type === 'sine_interactive') {
+             const calculator = Desmos.GraphingCalculator(elt, { expressions: true, settingsMenu: true });
+             calcs[id] = calculator;
+             calculator.setMathBounds({ left: -2, right: 24, bottom: 0, top: 10 });
+             calculator.setExpression({ id: 'lbl', latex: '(0,0)', label: 'Type equations in sidebar ->', showLabel:true, hidden:true });
+        }
+        else if (type === 'cos_interactive') {
+             const calculator = Desmos.GraphingCalculator(elt, { expressions: true, settingsMenu: true });
+             calcs[id] = calculator;
+             calculator.setMathBounds({ left: -2, right: 24, bottom: 10, top: 25 });
+             calculator.setExpression({ id: 'lbl', latex: '(0,10)', label: 'Type equations in sidebar ->', showLabel:true, hidden:true });
+        }
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        
+        const map = {'tab1':0, 'tab2':1, 'tab3':2};
+        document.querySelectorAll('.nav-btn')[map[tabId]].classList.add('active');
+        
+        if(tabId === 'tab1') setTimeout(() => initDesmos('graph-visual', 'visual'), 100);
+        if(tabId === 'tab2') setTimeout(() => initDesmos('graph-sine', 'sine_interactive'), 100);
+        if(tabId === 'tab3') setTimeout(() => initDesmos('graph-cos', 'cos_interactive'), 100);
+    }
+
+    // --- VISUAL UPDATE (Tab 1) ---
+    function updateVisual(param, val) {
+        document.getElementById('val-' + param).innerText = val;
+        calcs['graph-visual'].setExpression({ id: param, latex: `${param}=${val}` });
+    }
+
+    // --- SCENARIO SOLVERS ---
+    function solveSineScenario() {
+        let html = `<strong>Equation:</strong> $3\\sin(0.5t) + 5 = 6.5$<br>`;
+        html += `Step 1: Isolate the term. $3\\sin(0.5t) = 1.5$<br>`;
+        html += `Step 2: Isolate Sine. $\\sin(0.5t) = 0.5$<br>`;
+        html += `Step 3: Let $X = 0.5t$. Find Principal Value $\\alpha = \\sin^{-1}(0.5) = \\frac{\\pi}{6}$<br>`;
+        html += `Step 4: General Solution for X. $X = n\\pi + (-1)^n(\\frac{\\pi}{6})$<br>`;
+        html += `Step 5: Substitute back $0.5t$. $0.5t = n\\pi + (-1)^n(\\frac{\\pi}{6})$<br>`;
+        html += `Step 6: Solve for t (multiply by 2). <strong>$t = 2n\\pi + (-1)^n(\\frac{\\pi}{3})$</strong><br>`;
+        html += `<em>Check your graph: First solution ($n=0$) is $t = \\frac{\\pi}{3} \\approx 1.05$. Second ($n=1$) is $2\\pi - \\frac{\\pi}{3} = \\frac{5\\pi}{3} \\approx 5.24$.</em>`;
+        
+        document.getElementById('sine-solution').style.display = 'block';
+        document.getElementById('sine-solution').innerHTML = html;
+        if(window.MathJax) MathJax.typesetPromise();
+    }
+
+    function solveCosScenario() {
+        let html = `<strong>Equation:</strong> $4\\cos(\\frac{\\pi}{12}h) + 18 = 20$<br>`;
+        html += `Step 1: Isolate the term. $4\\cos(\\frac{\\pi}{12}h) = 2$<br>`;
+        html += `Step 2: Isolate Cosine. $\\cos(\\frac{\\pi}{12}h) = 0.5$<br>`;
+        html += `Step 3: Let $X = \\frac{\\pi}{12}h$. Find Principal Value $\\alpha = \\cos^{-1}(0.5) = \\frac{\\pi}{3}$<br>`;
+        html += `Step 4: General Solution for X. $X = 2n\\pi \\pm \\frac{\\pi}{3}$<br>`;
+        html += `Step 5: Substitute back. $\\frac{\\pi}{12}h = 2n\\pi \\pm \\frac{\\pi}{3}$<br>`;
+        html += `Step 6: Solve for h (multiply by $\\frac{12}{\\pi}$). <strong>$h = 24n \\pm 4$</strong><br>`;
+        html += `<em>Check your graph: Solutions at $h=4$, $h=20$ ($24-4$), $h=28$ ($24+4$)...</em>`;
+
+        document.getElementById('cos-solution').style.display = 'block';
+        document.getElementById('cos-solution').innerHTML = html;
+        if(window.MathJax) MathJax.typesetPromise();
+    }
+
+    window.onload = function() { switchTab('tab1'); };
+</script>
+
+</body>
+</html>
